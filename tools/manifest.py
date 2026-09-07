@@ -331,6 +331,25 @@ def parse_signature(code: str) -> dict:
     return {"cls": m.group(1), "methods": sorted(set(methods))}
 
 
+@functools.lru_cache(maxsize=1)
+def _signature_cache() -> dict:
+    if not SIGNATURES.exists():
+        return {}
+    return json.loads(SIGNATURES.read_text(encoding="utf-8"))
+
+
+def signature_status(slug: str) -> str:
+    """'checked', 'unavailable' or 'unknown'. Never fetches anything.
+
+    'unknown' only means nothing has looked yet — insert and sync both fill
+    the cache in, so it resolves on the next run.
+    """
+    cache = _signature_cache()
+    if slug not in cache:
+        return "unknown"
+    return "checked" if cache[slug] else "unavailable"
+
+
 def signature(slug: str) -> dict | None:
     """LeetCode's expected C++ class and methods, cached per problem.
 
@@ -364,6 +383,7 @@ def signature(slug: str) -> dict | None:
     snippets = question.get("codeSnippets") or []
     code = next((s["code"] for s in snippets if s["langSlug"] == "cpp"), None)
     cache[slug] = parse_signature(code) if code else None
+    _signature_cache.cache_clear()
     SIGNATURES.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n",
                           encoding="utf-8", newline="\n")
     return cache[slug]

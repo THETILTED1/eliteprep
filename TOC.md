@@ -4,7 +4,7 @@
 
 **1 problem** · 2 solutions · Easy 1
 
-Index · [Starred](STAR.md) · [Solutions](SOLUTIONS.md)
+Index · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Issues](ISSUES.md)
 
 ## Arrays & Hashing
 

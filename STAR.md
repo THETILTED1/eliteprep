@@ -4,7 +4,7 @@
 
 **1 problem** worth coming back to.
 
-[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md)
+[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Issues](ISSUES.md)
 
 ## Arrays & Hashing
 

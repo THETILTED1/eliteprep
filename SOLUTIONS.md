@@ -4,7 +4,7 @@
 
 **1 problem** where a second approach earned its keep. The primary one — what you would write in an interview — is in bold.
 
-[Index](TOC.md) · [Starred](STAR.md) · Solutions
+[Index](TOC.md) · [Starred](STAR.md) · Solutions · [Issues](ISSUES.md)
 
 | Problem | Approach | Time | Space |
 |---|---|---|---|

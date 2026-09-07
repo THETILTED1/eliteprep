@@ -464,6 +464,7 @@ def check_all() -> int:
     moves between topics here — that is insert's job, with TOPIC=.
     """
     failed = 0
+    failures: list[str] = []
     for d in sorted(gen_toc.SRC.iterdir()) if gen_toc.SRC.is_dir() else []:
         if not (d.is_dir() and gen_toc.TOPIC_DIR.match(d.name)):
             continue
@@ -482,12 +483,15 @@ def check_all() -> int:
                 bad = validate(draft, leetcode_signature(problem))
             except (InsertError, manifest.Unresolved) as e:
                 print(f"{rel}: {e}", file=sys.stderr)
+                failures.append(f"`{rel}` — {str(e).splitlines()[0]}")
                 failed += 1
                 continue
             if bad:
                 print(f"{rel}:", file=sys.stderr)
                 for b in bad:
                     print(f"  - {b}", file=sys.stderr)
+                failures.append(f"`{rel}` — " + "; ".join(
+                    b.splitlines()[0] for b in bad))
                 failed += 1
                 continue
 
@@ -502,7 +506,7 @@ def check_all() -> int:
                 f.write_text(text, encoding="utf-8", newline="\n")
                 print(f"  tidied {rel}")
 
-    gen_toc.main()
+    gen_toc.main(failures)
     if failed:
         print(f"{failed} file(s) need fixing", file=sys.stderr)
     return 1 if failed else 0

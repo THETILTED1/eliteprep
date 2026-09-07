@@ -26,8 +26,15 @@ Three generated indexes, all built from the solved files alone:
 | **[TOC.md](TOC.md)** | every solved problem, broken down by topic |
 | **[STAR.md](STAR.md)** | the starred subset, same breakdown |
 | **[SOLUTIONS.md](SOLUTIONS.md)** | problems that earned more than one approach, side by side |
+| **[ISSUES.md](ISSUES.md)** | anything that did not fully process, so it is not lost in scrollback |
 
 Everything is ordered by ascending difficulty, then by problem number.
+
+ISSUES.md is the one to check after a batch of inserts. It collects files that
+failed validation, index warnings, and — the case you cannot see otherwise —
+problems whose class and method names **were never verified**, because LeetCode
+publishes no C++ starter for its premium problems. Seven of the NeetCode 150 are
+premium, so this is not a corner case. It says "Nothing to report" when clean.
 
 `make search PATTERN="hashing, two pointers"` writes `search.md`: every solution
 whose `@patterns` match, with difficulty and complexity, easiest first. Matching
