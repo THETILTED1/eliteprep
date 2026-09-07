@@ -350,6 +350,25 @@ def clang_format(text: str, dest: Path) -> tuple[str, str | None]:
     return run.stdout, None
 
 
+def leetcode_signature(problem: dict) -> dict | None:
+    """The class and methods to check against, or None if there are none.
+
+    Premium problems expose no C++ starter, and a network failure is not the
+    draft's fault, so neither blocks a file — the check is simply skipped and
+    said out loud.
+    """
+    try:
+        sig = manifest.signature(problem["slug"])
+    except manifest.Unresolved as e:
+        print(f"  warning: {e}", file=sys.stderr)
+        return None
+    if sig is None:
+        print(f"  warning: LeetCode publishes no C++ starter for "
+              f"{manifest.handle(problem)} (premium) — class and method names "
+              "not checked", file=sys.stderr)
+    return sig
+
+
 def canonicalize(lines: list[str], draft: Draft, problem: dict) -> list[str]:
     """Stamp @title and @related down to handles. You type titles; files keep
     handles, so what is stored never depends on which site you were reading."""
@@ -402,10 +421,7 @@ def insert(src: Path, topic: str | None) -> None:
     except manifest.Unresolved as e:
         raise InsertError(f"@title {e}") from e
 
-    try:
-        sig = manifest.signature(problem["slug"])
-    except manifest.Unresolved as e:
-        raise InsertError(str(e)) from e
+    sig = leetcode_signature(problem)
 
     bad = validate(draft, sig)
     if bad:
@@ -463,7 +479,7 @@ def check_all() -> int:
                         f"expected exactly one @title line, found {len(draft.title)}"
                     )
                 problem = manifest.resolve_ref(draft.title[0])
-                bad = validate(draft, manifest.signature(problem["slug"]))
+                bad = validate(draft, leetcode_signature(problem))
             except (InsertError, manifest.Unresolved) as e:
                 print(f"{rel}: {e}", file=sys.stderr)
                 failed += 1

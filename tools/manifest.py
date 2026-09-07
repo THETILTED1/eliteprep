@@ -331,8 +331,15 @@ def parse_signature(code: str) -> dict:
     return {"cls": m.group(1), "methods": sorted(set(methods))}
 
 
-def signature(slug: str) -> dict:
-    """LeetCode's expected C++ class and methods, cached per problem."""
+def signature(slug: str) -> dict | None:
+    """LeetCode's expected C++ class and methods, cached per problem.
+
+    None when LeetCode exposes no C++ starter, in which case there is nothing
+    to check a solution against. That is not rare: the seven premium problems
+    in the NeetCode 150 return codeSnippets: null to anyone without a
+    subscription. The None is cached like any other answer, so a premium
+    problem costs one request, not one per run.
+    """
     cache = (json.loads(SIGNATURES.read_text(encoding="utf-8"))
              if SIGNATURES.exists() else {})
     if slug in cache:
@@ -354,11 +361,9 @@ def signature(slug: str) -> dict:
     if not question:
         raise Unresolved(f"leetcode returned no question for {slug!r}")
 
-    code = next((s["code"] for s in question["codeSnippets"] if s["langSlug"] == "cpp"), None)
-    if code is None:
-        raise Unresolved(f"{slug!r} has no C++ starter on LeetCode")
-
-    cache[slug] = parse_signature(code)
+    snippets = question.get("codeSnippets") or []
+    code = next((s["code"] for s in snippets if s["langSlug"] == "cpp"), None)
+    cache[slug] = parse_signature(code) if code else None
     SIGNATURES.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n",
                           encoding="utf-8", newline="\n")
     return cache[slug]
