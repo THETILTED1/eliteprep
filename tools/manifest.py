@@ -82,7 +82,7 @@ SNIPPET = ("query q($titleSlug:String!){question(titleSlug:$titleSlug)"
 OBJECT = re.compile(r'\{problem:"(?:[^"\\]|\\.)*"[^{}]*\}')
 PAIR = re.compile(r'(\w+):(?:"((?:[^"\\]|\\.)*)"|(!0|!1))')
 CODE = re.compile(r"^(\d+)-[a-z0-9-]+$")  # a couple of the 250 are unpadded
-REF = re.compile(r"^(?:.*/)?(\d{4})-([a-z0-9-]+?)(?:\.(?:cpp|cc))?$")
+REF = re.compile(r"^(\d{4})-([a-z0-9-]+)$")
 LOOKS_LIKE_URL = re.compile(r"://|\bleetcode\.com|\bneetcode\.io|/problems/")
 
 
@@ -289,9 +289,6 @@ def resolve_ref(text: str, sync: bool = False) -> dict:
     resolve() exactly like a pasted title, and the id half is checked against
     what that returns rather than trusted.
 
-    A @related entry may also be the path to the file it names, which is the
-    form insert writes once that problem exists. Same decomposition, one more
-    layer of wrapping to strip.
     """
     text = text.strip()
     m = REF.match(text)
