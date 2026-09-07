@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""Regenerate the three generated indexes, from the solved files alone.
+
+    TOC.md        every solved problem, broken down by topic
+    STAR.md       the starred subset, same breakdown
+    SOLUTIONS.md  problems that earned more than one approach, side by side
+
+TOC.md is the cover-all and carries nothing but the topic breakdown, so it
+stays readable at a hundred problems. Neither it nor STAR.md lists solutions —
+that comparison is the whole content of SOLUTIONS.md.
+
+Only problems that exist as files are listed. NeetCode's own site is the better
+roadmap for what is left, so none of this tries to be a checklist of the 150.
+
+Nothing about a problem's identity is typed by hand: the id and slug come from
+the filename, the title and difficulty from tools/neetcode.json. A source file
+carries only what is yours:
+
+    // 0217-contains-duplicate [Easy]   <- written by insert
+
+    // @star yes                        <- yes or no
+    // @related 0242-valid-anagram     <- comma-separated handles, at the bottom
+
+    // @patterns hashing                <- space-separated; labels this solution
+    // @solution O(N) time O(N) space
+    // @primary                         <- at most one per file
+    //
+    class Solution { ... };
+
+Comment blocks are grouped by blank lines. A group containing @solution
+describes the class below it; @star and @related are file-level wherever they
+appear. Solutions are labelled by their @patterns rather than their class name,
+so every class in a file may be called Solution.
+
+Run:  python3 tools/gen_toc.py
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from collections import defaultdict
+from dataclasses import dataclass, field
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import manifest  # noqa: E402
+
+ROOT = Path(__file__).resolve().parent.parent
+TOC = ROOT / "TOC.md"
+STAR = ROOT / "STAR.md"
+SOLUTIONS = ROOT / "SOLUTIONS.md"
+
+TOPIC_DIR = re.compile(r"^\d\d-[a-z0-9-]+$")
+FILENAME = re.compile(r"^(\d{4})-([a-z0-9-]+)\.(cpp|cc)$")
+TAG = re.compile(r"^@(\w+)\s*(.*)$")
+COMMENT = re.compile(r"^\s*//\s?(.*)$")
+
+DIFFICULTIES = ("Easy", "Medium", "Hard")
+SOURCE_EXT = {".cpp", ".cc"}
+NOT_PROBLEMS = {"template.cpp", "input.cpp"}
+
+TIME = re.compile(r"(O\([^)]*\))\s*time", re.I)
+SPACE = re.compile(r"(O\([^)]*\))\s*space", re.I)
+
+
+def plural(n: int, word: str) -> str:
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
+@dataclass
+class Solution:
+    complexity: str = ""
+    patterns: list[str] = field(default_factory=list)
+    primary: bool = False
+
+    @property
+    def label(self) -> str:
+        return " + ".join(self.patterns) or "?"
+
+
+@dataclass
+class Entry:
+    id: int
+    slug: str
+    title: str
+    difficulty: str
+    topic: str
+    path: Path
+    star: bool = False
+    related: list[str] = field(default_factory=list)
+    solutions: list[Solution] = field(default_factory=list)
+
+    @property
+    def handle(self) -> str:
+        return f"{self.id:04d}-{self.slug}"
+
+    @property
+    def link(self) -> str:
+        return f"{self.topic}/{self.path.name}"
+
+    @property
+    def name(self) -> str:
+        return f"[{self.title}]({self.link})" + (" ⭐" if self.star else "")
+
+
+def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
+    star, related, solutions = False, [], []
+
+    def flush(group: list[str]) -> None:
+        nonlocal star
+        tags: dict[str, list[str]] = defaultdict(list)
+        for line in group:
+            m = TAG.match(line)
+            if m:
+                tags[m.group(1)].append(m.group(2).strip())
+        for value in tags.get("star", []):
+            star = value.strip().lower() == "yes"
+        for value in tags.get("related", []):
+            related.extend(x.strip() for x in value.split(",") if x.strip())
+        if "solution" in tags:
+            solutions.append(
+                Solution(
+                    complexity=" ".join(tags["solution"]).strip(),
+                    patterns=" ".join(tags.get("patterns", [])).split(),
+                    primary="primary" in tags,
+                )
+            )
+
+    group: list[str] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        m = COMMENT.match(raw)
+        if m:
+            group.append(m.group(1).strip())
+        else:
+            flush(group)
+            group = []
+    flush(group)
+    return star, related, solutions
+
+
+def collect() -> tuple[list[Entry], list[str]]:
+    entries: list[Entry] = []
+    warnings: list[str] = []
+
+    for d in sorted(ROOT.iterdir()):
+        if not (d.is_dir() and TOPIC_DIR.match(d.name)):
+            continue
+        for f in sorted(d.iterdir()):
+            if not f.is_file() or f.name.startswith("."):
+                continue
+            m = FILENAME.match(f.name)
+            if not m:
+                warnings.append(f"unparseable filename: {f.relative_to(ROOT)}")
+                continue
+            try:
+                p = manifest.resolve(m.group(2))  # the slug is the title, hyphenated
+            except manifest.Unresolved:
+                warnings.append(f"unknown problem: {f.relative_to(ROOT)}")
+                continue
+
+            if p["id"] != int(m.group(1)):
+                warnings.append(
+                    f"{f.relative_to(ROOT)}: slug is problem {p['id']}, not {m.group(1)}"
+                )
+            star, related, solutions = parse_tags(f)
+            if not solutions:
+                warnings.append(f"no @solution in {f.relative_to(ROOT)}")
+            entries.append(
+                Entry(int(m.group(1)), m.group(2), p["title"], p["difficulty"],
+                      d.name, f, star, related, solutions)
+            )
+
+    # Every problem must live in a topic directory. A source file anywhere else
+    # would be silently absent from all three indexes, so say so loudly.
+    for f in ROOT.rglob("*"):
+        rel = f.relative_to(ROOT)
+        if (not f.is_file() or f.suffix not in SOURCE_EXT
+                or f.name in NOT_PROBLEMS or rel.parts[0] in ("tools", ".git")):
+            continue
+        if len(rel.parts) == 2 and TOPIC_DIR.match(rel.parts[0]):
+            continue
+        warnings.append(f"{rel} is not in a topic directory, so it is indexed nowhere")
+
+    for e in entries:
+        for ref in e.related:
+            try:
+                manifest.resolve_ref(ref)
+            except manifest.Unresolved as err:
+                warnings.append(f"{e.handle}: @related {err}")
+    return entries, warnings
+
+
+def pretty(topic: str) -> str:
+    """NeetCode's own display name, so dp-1d reads as 1-D Dynamic Programming."""
+    slug = topic.split("-", 1)[1]
+    for display, s in manifest.TOPIC_SLUG.items():
+        if s == slug:
+            return display
+    return slug.replace("-", " ").title()
+
+
+GENERATED = "<!-- Generated by tools/gen_toc.py. Do not edit by hand. -->"
+
+
+def nav(current: Path) -> str:
+    links = [("TOC.md", "Index"), ("STAR.md", "Starred"),
+             ("SOLUTIONS.md", "Solutions")]
+    return " · ".join(
+        label if f == current.name else f"[{label}]({f})" for f, label in links
+    )
+
+
+def topic_tables(entries: list[Entry], out: list[str], star: bool = True) -> None:
+    by_topic: dict[str, list[Entry]] = defaultdict(list)
+    for e in entries:
+        by_topic[e.topic].append(e)
+    for topic in sorted(by_topic):
+        out.append(f"## {pretty(topic)}")
+        out.append("")
+        out.append("| # | Problem | Diff |")
+        out.append("|---|---|---|")
+        for e in sorted(by_topic[topic], key=lambda e: e.id):
+            name = e.name if star else f"[{e.title}]({e.link})"
+            out.append(f"| {e.id} | {name} | {e.difficulty} |")
+        out.append("")
+
+
+def emit_toc(entries: list[Entry]) -> str:
+    out = ["# Solved", "", GENERATED, ""]
+    if not entries:
+        return "\n".join(out + ["Nothing solved yet.", ""])
+
+    counts = {d: sum(1 for e in entries if e.difficulty == d) for d in DIFFICULTIES}
+    bits = [f"**{plural(len(entries), 'problem')}**",
+            plural(sum(len(e.solutions) for e in entries), "solution")]
+    bits += [f"{d} {n}" for d, n in counts.items() if n]
+    out += [" · ".join(bits), "", nav(TOC), ""]
+    topic_tables(entries, out)
+    return "\n".join(out)
+
+
+def emit_star(entries: list[Entry]) -> str:
+    starred = [e for e in entries if e.star]
+    out = ["# Starred", "", GENERATED, ""]
+    if not starred:
+        return "\n".join(out + [nav(STAR), "", "Nothing starred yet.", ""])
+    out += [f"**{plural(len(starred), 'problem')}** worth coming back to.",
+            "", nav(STAR), ""]
+    topic_tables(starred, out, star=False)
+    return "\n".join(out)
+
+
+def split_complexity(text: str) -> tuple[str, str]:
+    """'O(N) time O(1) space' -> ('O(N)', 'O(1)'); anything else passes through."""
+    time, space = TIME.search(text), SPACE.search(text)
+    if time and space:
+        return time.group(1), space.group(1)
+    return text, ""
+
+
+def emit_solutions(entries: list[Entry]) -> str:
+    out = ["# Solutions", "", GENERATED, ""]
+    multi = sorted((e for e in entries if len(e.solutions) > 1),
+                   key=lambda e: (-len(e.solutions), e.id))
+    if not multi:
+        return "\n".join(out + [nav(SOLUTIONS), "",
+                                "No problem has more than one solution yet.", ""])
+
+    out += [f"**{plural(len(multi), 'problem')}** where a second approach earned "
+            "its keep. The primary one — what you would write in an interview — "
+            "is in bold.", "", nav(SOLUTIONS), "",
+            "| Problem | Approach | Time | Space |",
+            "|---|---|---|---|"]
+    for e in multi:
+        for n, s in enumerate(e.solutions):
+            label = f"**{s.label}**" if s.primary else s.label
+            time, space = split_complexity(s.complexity)
+            out.append(
+                f"| {e.name if n == 0 else ''} | {label} "
+                f"| `{time}` | {f'`{space}`' if space else ''} |"
+            )
+    out.append("")
+    return "\n".join(out)
+
+
+def main() -> int:
+    entries, warnings = collect()
+    for path, text in ((TOC, emit_toc(entries)), (STAR, emit_star(entries)),
+                       (SOLUTIONS, emit_solutions(entries))):
+        path.write_text(text + "\n", encoding="utf-8", newline="\n")
+    for msg in warnings:
+        print(f"warning: {msg}", file=sys.stderr)
+    print(f"wrote TOC.md, STAR.md, SOLUTIONS.md ({plural(len(entries), 'problem')} solved)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,6 @@
+__pycache__/
+input.cpp
+
+# Per-user cache: one entry per problem you have filed, so it diverges between
+# any two copies of this repo. Refetched on demand, so losing it costs nothing.
+tools/signatures.json

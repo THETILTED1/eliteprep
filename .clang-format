@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 88
+AccessModifierOffset: -4
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+RemoveBracesLLVM: true
+ReflowComments: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Empty
