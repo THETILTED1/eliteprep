@@ -350,6 +350,28 @@ def clang_format(text: str, dest: Path) -> tuple[str, str | None]:
     return run.stdout, None
 
 
+def complain(path: Path, bad: list[str]) -> str:
+    """Render findings against the file, so the path is clickable."""
+    try:
+        shown = f"./{path.resolve().relative_to(ROOT)}"
+    except ValueError:
+        shown = str(path)
+    return "\n".join(f"  {shown}: " + b.replace("\n", "\n    ") for b in bad)
+
+
+def related_ref(text: str) -> str:
+    """A @related entry, written as a path when that problem is actually here.
+
+    A problem you have not solved yet has no file to point at, so it stays a
+    bare handle and leads nowhere. `sync` restamps every file, so the moment
+    you file that problem the reference upgrades itself on the next run.
+    """
+    handle = manifest.handle(manifest.resolve_ref(text))
+    for existing in gen_toc.SRC.glob(f"*/{handle}.*"):
+        return str(existing.relative_to(ROOT))
+    return handle
+
+
 def leetcode_signature(problem: dict) -> dict | None:
     """The class and methods to check against, or None if there are none.
 
@@ -377,9 +399,7 @@ def canonicalize(lines: list[str], draft: Draft, problem: dict) -> list[str]:
         f"// @title {manifest.handle(problem)} [{problem['difficulty']}]"
     )
     if draft.related_lines:
-        refs = ", ".join(
-            manifest.handle(manifest.resolve_ref(r)) for r in draft.related
-        )
+        refs = ", ".join(related_ref(r) for r in draft.related)
         lines[draft.related_lines[0]] = f"// @related {refs}".rstrip()
     return lines
 
@@ -419,16 +439,15 @@ def insert(src: Path, topic: str | None) -> None:
     try:
         problem = manifest.resolve_ref(draft.title[0], sync=True)
     except manifest.Unresolved as e:
-        raise InsertError(f"@title {e}") from e
+        raise InsertError(f"{src} is not ready to insert:\n"
+                          + complain(src, [f"@title {e}"])) from e
 
     sig = leetcode_signature(problem)
 
     bad = validate(draft, sig)
     if bad:
-        raise InsertError(
-            f"{src} is not ready to insert:\n"
-            + "\n".join("  - " + b.replace("\n", "\n  ") for b in bad)
-        )
+        raise InsertError(f"{src} is not ready to insert:\n"
+                          + complain(src, bad))
 
     dest_topic = pick_topic(topic, problem)
     handle = manifest.handle(problem)
@@ -487,9 +506,7 @@ def check_all() -> int:
                 failed += 1
                 continue
             if bad:
-                print(f"{rel}:", file=sys.stderr)
-                for b in bad:
-                    print(f"  - {b}", file=sys.stderr)
+                print(complain(f, bad), file=sys.stderr)
                 failures.append(f"`{rel}` — " + "; ".join(
                     b.splitlines()[0] for b in bad))
                 failed += 1
@@ -519,7 +536,8 @@ def start_draft(dest: Path) -> int:
         return 1
     dest.write_text((ROOT / "template.cpp").read_text(encoding="utf-8"),
                     encoding="utf-8", newline="\n")
-    print(f"wrote {dest} — fill in @title, then: make insert")
+    shown = dest.resolve().relative_to(ROOT) if dest.is_absolute() else dest
+    print(f"wrote ./{shown} — fill in @title, then: make insert")
     return 0
 
 
