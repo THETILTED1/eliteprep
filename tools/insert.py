@@ -359,19 +359,6 @@ def complain(path: Path, bad: list[str]) -> str:
     return "\n".join(f"  {shown}: " + b.replace("\n", "\n    ") for b in bad)
 
 
-def related_ref(text: str) -> str:
-    """A @related entry, written as a path when that problem is actually here.
-
-    A problem you have not solved yet has no file to point at, so it stays a
-    bare handle and leads nowhere. `sync` restamps every file, so the moment
-    you file that problem the reference upgrades itself on the next run.
-    """
-    handle = manifest.handle(manifest.resolve_ref(text))
-    for existing in gen_toc.SRC.glob(f"*/{handle}.*"):
-        return str(existing.relative_to(ROOT))
-    return handle
-
-
 def leetcode_signature(problem: dict) -> dict | None:
     """The class and methods to check against, or None if there are none.
 
@@ -399,7 +386,11 @@ def canonicalize(lines: list[str], draft: Draft, problem: dict) -> list[str]:
         f"// @title {manifest.handle(problem)} [{problem['difficulty']}]"
     )
     if draft.related_lines:
-        refs = ", ".join(related_ref(r) for r in draft.related)
+        # Handles, not paths: an editor does not linkify a relative path inside
+        # a C++ comment, so the path bought nothing and read worse.
+        refs = ", ".join(
+            manifest.handle(manifest.resolve_ref(r)) for r in draft.related
+        )
         lines[draft.related_lines[0]] = f"// @related {refs}".rstrip()
     return lines
 
