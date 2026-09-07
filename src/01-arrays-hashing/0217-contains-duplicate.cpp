@@ -16,7 +16,7 @@ If we try to insert it again, it fails, so return
 class Solution {
 public:
     bool containsDuplicate(vector<int>& nums) {
-        std::unordered_set<int> seen{};
+        unordered_set<int> seen{};
         for (int k : nums) {
             if (seen.contains(k))
                 return true;
@@ -38,7 +38,7 @@ struct Compare {
 class Solution {
 public:
     bool containsDuplicate(vector<int>& nums) {
-        std::sort(nums.begin(), nums.end(), Compare{});
+        sort(nums.begin(), nums.end(), Compare{});
         for (size_t i = 1; i < nums.size(); ++i)
             if (nums[i] == nums[i - 1])
                 return true;

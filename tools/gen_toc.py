@@ -51,6 +51,7 @@ SRC = ROOT / "src"          # the eighteen topic directories live here
 TOC = ROOT / "TOC.md"
 STAR = ROOT / "STAR.md"
 SOLUTIONS = ROOT / "SOLUTIONS.md"
+SEARCH = ROOT / "search.md"   # scratch output of `make search`, gitignored
 
 TOPIC_DIR = re.compile(r"^\d\d-[a-z0-9-]+$")
 FILENAME = re.compile(r"^(\d{4})-([a-z0-9-]+)\.(cpp|cc)$")
@@ -58,6 +59,7 @@ TAG = re.compile(r"^@(\w+)\s*(.*)$")
 COMMENT = re.compile(r"^\s*//\s?(.*)$")
 
 DIFFICULTIES = ("Easy", "Medium", "Hard")
+RANK = {d: i for i, d in enumerate(DIFFICULTIES)}
 SOURCE_EXT = {".cpp", ".cc"}
 NOT_PROBLEMS = {"template.cpp", "input.cpp"}
 
@@ -77,7 +79,7 @@ class Solution:
 
     @property
     def label(self) -> str:
-        return " + ".join(self.patterns) or "?"
+        return ", ".join(self.patterns) or "?"
 
 
 @dataclass
@@ -105,6 +107,14 @@ class Entry:
         return f"[{self.title}]({self.link})" + (" ⭐" if self.star else "")
 
 
+def split_patterns(values: list[str]) -> list[str]:
+    """Comma-separated, so a pattern can be several words: 'two pointers'."""
+    out: list[str] = []
+    for value in values:
+        out += [x.strip() for x in value.split(",") if x.strip()]
+    return out
+
+
 def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
     star, related, solutions = False, [], []
 
@@ -123,7 +133,7 @@ def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
             solutions.append(
                 Solution(
                     complexity=" ".join(tags["solution"]).strip(),
-                    patterns=" ".join(tags.get("patterns", [])).split(),
+                    patterns=split_patterns(tags.get("patterns", [])),
                     primary="primary" in tags,
                 )
             )
@@ -222,7 +232,7 @@ def topic_tables(entries: list[Entry], out: list[str], star: bool = True) -> Non
         out.append("")
         out.append("| # | Problem | Diff |")
         out.append("|---|---|---|")
-        for e in sorted(by_topic[topic], key=lambda e: e.id):
+        for e in sorted(by_topic[topic], key=lambda e: (RANK.get(e.difficulty, 9), e.id)):
             name = e.name if star else f"[{e.title}]({e.link})"
             out.append(f"| {e.id} | {name} | {e.difficulty} |")
         out.append("")
@@ -264,7 +274,7 @@ def split_complexity(text: str) -> tuple[str, str]:
 def emit_solutions(entries: list[Entry]) -> str:
     out = ["# Solutions", "", GENERATED, ""]
     multi = sorted((e for e in entries if len(e.solutions) > 1),
-                   key=lambda e: (-len(e.solutions), e.id))
+                   key=lambda e: (RANK.get(e.difficulty, 9), e.id))
     if not multi:
         return "\n".join(out + [nav(SOLUTIONS), "",
                                 "No problem has more than one solution yet.", ""])
@@ -286,7 +296,51 @@ def emit_solutions(entries: list[Entry]) -> str:
     return "\n".join(out)
 
 
+def emit_search(entries: list[Entry], query: str) -> tuple[str, int]:
+    """Every solution whose @patterns match, newest question of matching last."""
+    terms = [x.strip().lower() for x in query.split(",") if x.strip()]
+    hits: list[tuple[Entry, Solution, list[str]]] = []
+    for e in entries:
+        for s in e.solutions:
+            matched = [p for p in s.patterns
+                       if any(term in p.lower() for term in terms)]
+            if matched:
+                hits.append((e, s, matched))
+    hits.sort(key=lambda h: (RANK.get(h[0].difficulty, 9), h[0].id))
+
+    out = [f"# Pattern: {query}", "", GENERATED, ""]
+    if not hits:
+        known = sorted({p for e in entries for s in e.solutions for p in s.patterns})
+        out += [f"Nothing matches `{query}`.", "",
+                "Patterns in use: " + (", ".join(f"`{p}`" for p in known) or "none"), ""]
+        return "\n".join(out), 0
+
+    out += [f"**{plural(len(hits), 'solution')}** across "
+            f"{plural(len({e.handle for e, _, _ in hits}), 'problem')}, easiest first.",
+            "", f"[Index](TOC.md)", "",
+            "| # | Problem | Diff | Approach | Time | Space |",
+            "|---|---|---|---|---|---|"]
+    for e, s, matched in hits:
+        label = ", ".join(f"**{p}**" if p in matched else p for p in s.patterns)
+        time, space = split_complexity(s.complexity)
+        out.append(f"| {e.id} | [{e.title}]({e.link}) | {e.difficulty} | {label} "
+                   f"| `{time}` | {f'`{space}`' if space else ''} |")
+    out.append("")
+    return "\n".join(out), len(hits)
+
+
+def search(query: str) -> int:
+    entries, _ = collect()
+    text, n = emit_search(entries, query)
+    SEARCH.write_text(text + "\n", encoding="utf-8", newline="\n")
+    rel = SEARCH.relative_to(ROOT)
+    print(f"{n} match(es) -> ./{rel}" if n else f"no matches -> ./{rel}")
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "--search":
+        return search(" ".join(sys.argv[2:]))
     entries, warnings = collect()
     for path, text in ((TOC, emit_toc(entries)), (STAR, emit_star(entries)),
                        (SOLUTIONS, emit_solutions(entries))):

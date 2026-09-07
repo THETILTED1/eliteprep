@@ -152,7 +152,7 @@ def parse(lines: list[str]) -> Draft:
             body = "\n".join(lines[body_start:i]) if body_start is not None else ""
             draft.blocks.append(
                 Block(open_at, i + 1,
-                      " ".join(tags.get("patterns", [])).strip(),
+                      ", ".join(gen_toc.split_patterns(tags.get("patterns", []))),
                       " ".join(tags["solution"]).strip(),
                       "primary" in tags,
                       body)

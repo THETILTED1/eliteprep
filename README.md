@@ -27,6 +27,14 @@ Three generated indexes, all built from the solved files alone:
 | **[STAR.md](STAR.md)** | the starred subset, same breakdown |
 | **[SOLUTIONS.md](SOLUTIONS.md)** | problems that earned more than one approach, side by side |
 
+Everything is ordered by ascending difficulty, then by problem number.
+
+`make search PATTERN="hashing, two pointers"` writes `search.md`: every solution
+whose `@patterns` match, with difficulty and complexity, easiest first. Matching
+is case-insensitive and by substring, so `sort` finds `sorting`, and the terms
+are a union. A miss lists every pattern you have actually used, which is a quick
+way to catch your vocabulary drifting. The file is scratch and gitignored.
+
 TOC.md is the cover-all and carries nothing but the topic breakdown, so it stays
 readable at a hundred problems. Neither it nor STAR.md lists solutions — that
 comparison is the whole content of SOLUTIONS.md, where each approach gets its
@@ -116,7 +124,8 @@ at once rather than one at a time:
 - exactly one `@related`, comma-separated; each entry must resolve, and an
   empty list is fine
 - at least one solution block
-- every solution has `@patterns`, a complexity on `@solution`, and a class body
+- every solution has `@patterns` (comma-separated), a complexity on
+  `@solution`, and a class body
 - exactly one `@primary` across the file
 - every solution declares LeetCode's own class name and defines all of its
   methods, so the file is a drop-in paste back into the judge
@@ -160,7 +169,7 @@ is yours:
 // @title 0217-contains-duplicate [Easy]   <- stamped by insert from a title
 // @star yes                     <- yes or no; flags it as interesting
 
-// @patterns hashing             <- space-separated; labels this solution
+// @patterns hashing, sorting    <- comma-separated; labels this solution
 // @solution O(N) time O(N) space
 // @primary                      <- bare; at most one per file
 //
@@ -197,8 +206,8 @@ the labels overlap the topics unevenly (`hashing` is a subset of Arrays &
 Hashing, `sorting` corresponds to no topic at all), so such a list would sort
 poorly and read worse than the topic breakdown it duplicates.
 
-Files are paste-ready — no includes, no `using namespace std` — matching what
-the judge expects.
+Files are paste-ready — no includes, no `using namespace std`, and no `std::`
+qualification — matching what the judge hands you.
 
 ## Formatting
 

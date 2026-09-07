@@ -1,5 +1,6 @@
 # make new                                      start input.cpp from template.cpp
 # make sync                                     tidy filed files, rebuild indexes
+# make search PATTERN="hashing, sorting"        list matching solutions in search.md
 # make insert                                   file input.cpp
 # make insert SRC=other.cpp TOPIC=arrays-hashing
 #
@@ -15,7 +16,7 @@ SRC ?= input.cpp
 PY := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null)
 PY := $(if $(PY),$(PY),python3)
 
-.PHONY: new insert sync
+.PHONY: new insert sync search
 
 new:
 	@$(PY) tools/insert.py --new $(SRC)
@@ -25,3 +26,6 @@ insert:
 
 sync:
 	@$(PY) tools/insert.py --sync
+
+search:
+	@$(PY) tools/gen_toc.py --search "$(PATTERN)"
