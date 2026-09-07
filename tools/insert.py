@@ -416,7 +416,7 @@ def insert(src: Path, topic: str | None) -> None:
 
     dest_topic = pick_topic(topic, problem)
     handle = manifest.handle(problem)
-    dest = ROOT / dest_topic / f"{handle}{src.suffix}"
+    dest = gen_toc.SRC / dest_topic / f"{handle}{src.suffix}"
     replacing = dest.exists() and dest.resolve() != src.resolve()
 
     lines = canonicalize(lines, draft, problem)
@@ -428,11 +428,11 @@ def insert(src: Path, topic: str | None) -> None:
     text, note = clang_format("\n".join(lines) + "\n", dest)
     if note:
         print(f"  warning: {note}", file=sys.stderr)
-    dest.parent.mkdir(exist_ok=True)
+    dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(text, encoding="utf-8", newline="\n")
     if src.resolve() != dest.resolve():
         src.unlink()
-    for stale in ROOT.glob(f"*/{handle}.*"):  # e.g. a corrected TOPIC
+    for stale in gen_toc.SRC.glob(f"*/{handle}.*"):  # e.g. a corrected TOPIC
         if stale.resolve() != dest.resolve():
             stale.unlink()
             print(f"  removed {stale.relative_to(ROOT)}")
@@ -448,7 +448,7 @@ def check_all() -> int:
     moves between topics here — that is insert's job, with TOPIC=.
     """
     failed = 0
-    for d in sorted(ROOT.iterdir()):
+    for d in sorted(gen_toc.SRC.iterdir()) if gen_toc.SRC.is_dir() else []:
         if not (d.is_dir() and gen_toc.TOPIC_DIR.match(d.name)):
             continue
         for f in sorted(d.iterdir()):

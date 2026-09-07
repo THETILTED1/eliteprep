@@ -10,5 +10,5 @@
 
 | # | Problem | Diff |
 |---|---|---|
-| 217 | [Contains Duplicate](01-arrays-hashing/0217-contains-duplicate.cpp) | Easy |
+| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy |
 

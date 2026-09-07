@@ -8,6 +8,6 @@
 
 | Problem | Approach | Time | Space |
 |---|---|---|---|
-| [Contains Duplicate](01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | **hashing** | `O(N)` | `O(N)` |
+| [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | **hashing** | `O(N)` | `O(N)` |
 |  | sorting | `O(N log N)` | `O(1)` |
 

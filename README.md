@@ -12,7 +12,7 @@ you happen to be looking at. Everything else is derived: the id, the slug, the
 difficulty, the filename and the topic it belongs under. Nothing about a
 problem is typed by hand and nothing is looked up twice.
 
-`01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example. Delete it
+`src/01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example. Delete it
 whenever you like; the tooling does not depend on it.
 
 **C++ only.** The validation that makes this worth using — that a solution
@@ -52,7 +52,7 @@ can press *Use this template* and get their own copy, private if they want.
 
 Take later tool changes with `git pull upstream main`. This stays quiet because
 the two sides occupy disjoint paths — the tool is `tools/`, `Makefile`,
-`template.cpp` and `.clang-format`; your work is `NN-topic/*.cpp` — so there is
+`template.cpp` and `.clang-format`; your work is `src/` — so there is
 nothing to collide. The exception is the three generated indexes, which both
 sides rewrite. They are derived, so take yours and rebuild rather than merging:
 
@@ -97,7 +97,7 @@ decomposition of a field insert wrote — the slug half still goes through the
 one transform, and the id half is checked against what that returns rather than
 trusted, so `0242-contains-duplicate` is rejected as inconsistent.
 
-The file then moves to `01-arrays-hashing/0217-contains-duplicate.cpp` and
+The file then moves to `src/01-arrays-hashing/0217-contains-duplicate.cpp` and
 `TOC.md` is regenerated. `template.cpp` carries a second solution block; fill
 it in or delete it, and if you leave it untouched `insert` drops it for you.
 Re-running `insert` on an already-filed problem is safe — the canonical header
@@ -134,10 +134,11 @@ default bucket and no fallback. A source file anywhere else is reported by
 
 ## Layout
 
-    NN-topic-name/LLLL-problem-slug.cpp
+    src/NN-topic-name/LLLL-problem-slug.cpp
 
-Topic directories are the eighteen from NeetCode's roadmap, prefixed `01`–`18`
-in its order, which is pedagogical rather than alphabetical. The 18 topics are kept because they are a
+The eighteen topic directories live under `src/`, which keeps the repository
+front page to the tool and the indexes. They are NeetCode's roadmap topics,
+prefixed `01`–`18` in its order, which is pedagogical rather than alphabetical. The 18 topics are kept because they are a
 *single-label* partition — every problem has exactly one home — which is what a
 directory tree needs. LeetCode's own tags are not: across the NeetCode 250 they
 average 3.7 tags per problem, only 6 problems carry a single tag, and the most

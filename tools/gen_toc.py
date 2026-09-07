@@ -47,6 +47,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import manifest  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "src"          # the eighteen topic directories live here
 TOC = ROOT / "TOC.md"
 STAR = ROOT / "STAR.md"
 SOLUTIONS = ROOT / "SOLUTIONS.md"
@@ -97,7 +98,7 @@ class Entry:
 
     @property
     def link(self) -> str:
-        return f"{self.topic}/{self.path.name}"
+        return f"src/{self.topic}/{self.path.name}"
 
     @property
     def name(self) -> str:
@@ -143,7 +144,7 @@ def collect() -> tuple[list[Entry], list[str]]:
     entries: list[Entry] = []
     warnings: list[str] = []
 
-    for d in sorted(ROOT.iterdir()):
+    for d in sorted(SRC.iterdir()) if SRC.is_dir() else []:
         if not (d.is_dir() and TOPIC_DIR.match(d.name)):
             continue
         for f in sorted(d.iterdir()):
@@ -178,9 +179,10 @@ def collect() -> tuple[list[Entry], list[str]]:
         if (not f.is_file() or f.suffix not in SOURCE_EXT
                 or f.name in NOT_PROBLEMS or rel.parts[0] in ("tools", ".git")):
             continue
-        if len(rel.parts) == 2 and TOPIC_DIR.match(rel.parts[0]):
+        if (len(rel.parts) == 3 and rel.parts[0] == "src"
+                and TOPIC_DIR.match(rel.parts[1])):
             continue
-        warnings.append(f"{rel} is not in a topic directory, so it is indexed nowhere")
+        warnings.append(f"{rel} is not in src/<topic>/, so it is indexed nowhere")
 
     for e in entries:
         for ref in e.related:
