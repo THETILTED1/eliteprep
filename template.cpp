@@ -4,6 +4,7 @@
 
 // @related
 
+// @optimal
 // @solution
 // @patterns
 // @primary
@@ -14,6 +15,7 @@ public:
 };
 // @end
 
+// @optimal
 // @solution
 // @patterns
 //

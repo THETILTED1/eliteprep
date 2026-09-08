@@ -52,9 +52,8 @@ DECL_ONLY = re.compile(r"^(?:class|struct)\s+\w+\s*\{?$")
 BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 ACCESS = re.compile(r"^(?:public|private|protected)\s*:\s*$")
 
-# Optional, per solution. Its absence claims nothing; its presence names what
-# is wrong with an approach you decided to keep anyway.
-SUBOPTIMAL_AXES = {"time", "space", "style"}
+# Required once per solution, on the line above @solution.
+OPTIMAL_VALUES = {"yes", "no"}
 
 
 class InsertError(Exception):
@@ -86,7 +85,7 @@ class Block:
     patterns: str = ""
     complexity: str = ""
     primary: bool = False
-    suboptimal: list[str] = field(default_factory=list)
+    optimal: list[str] = field(default_factory=list)
     body: str = ""
 
     @property
@@ -125,12 +124,18 @@ def parse(lines: list[str]) -> Draft:
     open_at: int | None = None
     tags: dict[str, list[str]] = {}
     body_start: int | None = None
+    # Tags may sit above their @solution — @optimal does — so they are buffered
+    # until one claims them. A comment run that ends without an @solution has
+    # left them genuinely stray.
+    pending: list[tuple[int, str, str]] = []
 
     for i, line in enumerate(lines):
         m = COMMENT.match(line)
         if not m:
             if open_at is not None and body_start is None and line.strip():
                 body_start = i
+            draft.stray_tags.extend((ln, nm) for ln, nm, _ in pending)
+            pending = []
             continue
 
         tag = TAG.match(m.group(1).strip())
@@ -149,7 +154,10 @@ def parse(lines: list[str]) -> Draft:
         elif name == "solution":
             if open_at is not None:
                 draft.unclosed.append(open_at)
-            open_at, tags, body_start = i, {"solution": [value]}, None
+            tags = {"solution": [value]}
+            for _, held, held_value in pending:  # @optimal sits above @solution
+                tags.setdefault(held, []).append(held_value)
+            open_at, body_start, pending = i, None, []
         elif name == "end":
             if open_at is None:
                 draft.stray_ends.append(i)
@@ -160,15 +168,16 @@ def parse(lines: list[str]) -> Draft:
                       ", ".join(gen_toc.split_patterns(tags.get("patterns", []))),
                       " ".join(tags["solution"]).strip(),
                       "primary" in tags,
-                      gen_toc.split_patterns(tags.get("suboptimal", [])),
+                      tags.get("optimal", []),
                       body)
             )
             open_at, tags, body_start = None, {}, None
         elif open_at is not None and body_start is None:
             tags.setdefault(name, []).append(value)
         else:
-            draft.stray_tags.append((i, name))
+            pending.append((i, name, value))
 
+    draft.stray_tags.extend((ln, nm) for ln, nm, _ in pending)
     if open_at is not None:
         draft.unclosed.append(open_at)
     return draft
@@ -241,10 +250,13 @@ def validate(draft: Draft, sig: dict | None) -> list[str]:
             bad.append(f"solution {n} has an empty class body")
 
     for n, b in enumerate(draft.blocks, 1):
-        for axis in b.suboptimal:
-            if axis not in SUBOPTIMAL_AXES:
-                bad.append(f"solution {n}: @suboptimal {axis!r} is not one of "
-                           + ", ".join(sorted(SUBOPTIMAL_AXES)))
+        if len(b.optimal) != 1:
+            bad.append(f"solution {n}: expected exactly one @optimal, found "
+                       f"{len(b.optimal)} — put '@optimal yes' or '@optimal no' "
+                       "on the line above @solution")
+        elif b.optimal[0].lower() not in OPTIMAL_VALUES:
+            bad.append(f"solution {n}: @optimal must be 'yes' or 'no', not "
+                       f"{b.optimal[0]!r}")
 
     primary = sum(b.primary for b in draft.blocks)
     if draft.blocks and primary != 1:

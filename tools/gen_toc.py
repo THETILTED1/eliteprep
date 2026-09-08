@@ -3,7 +3,8 @@
 
     TOC.md        every solved problem, broken down by topic
     STAR.md       the starred subset, same breakdown
-    SOLUTIONS.md  problems that earned more than one approach, side by side
+    SOLUTIONS.md  what is not optimal, and where more than one approach was kept
+    ISSUES.md     anything that did not fully process
 
 TOC.md is the cover-all and carries nothing but the topic breakdown, so it
 stays readable at a hundred problems. Neither it nor STAR.md lists solutions —
@@ -19,13 +20,15 @@ carries only what is yours:
     // 0217-contains-duplicate [Easy]   <- written by insert
 
     // @star yes                        <- yes or no
-    // @related 0242-valid-anagram     <- comma-separated handles, at the bottom
+    // @related 0242-valid-anagram       <- comma-separated handles
 
-    // @patterns hashing                <- space-separated; labels this solution
-    // @solution O(N) time O(N) space
-    // @primary                         <- at most one per file
+    // @optimal no                       <- yes or no, above every @solution
+    // @solution O(N log N) time O(1) space
+    // @patterns sorting                 <- comma-separated; labels this solution
+    // @primary                          <- at most one per file
     //
     class Solution { ... };
+    // @end
 
 Comment blocks are grouped by blank lines. A group containing @solution
 describes the class below it; @star and @related are file-level wherever they
@@ -77,7 +80,7 @@ class Solution:
     complexity: str = ""
     patterns: list[str] = field(default_factory=list)
     primary: bool = False
-    suboptimal: list[str] = field(default_factory=list)
+    optimal: bool = True
 
     @property
     def label(self) -> str:
@@ -137,7 +140,8 @@ def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
                     complexity=" ".join(tags["solution"]).strip(),
                     patterns=split_patterns(tags.get("patterns", [])),
                     primary="primary" in tags,
-                    suboptimal=split_patterns(tags.get("suboptimal", [])),
+                    optimal=all(v.strip().lower() == "yes"
+                                for v in tags.get("optimal", ["yes"])),
                 )
             )
 
@@ -277,18 +281,19 @@ def split_complexity(text: str) -> tuple[str, str]:
 def emit_solutions(entries: list[Entry]) -> str:
     out = ["# Solutions", "", GENERATED, "", nav(SOLUTIONS), ""]
 
-    weak = [(e, s) for e in entries for s in e.solutions if s.suboptimal]
+    weak = [(e, s) for e in entries for s in e.solutions if not s.optimal]
     weak.sort(key=lambda pair: (RANK.get(pair[0].difficulty, 9), pair[0].id))
     if weak:
-        out += ["## Known suboptimal", "",
-                "Kept as written, but marked. `time` and `space` mean a better "
-                "complexity is known to exist; `style` means it works and reads "
-                "badly.", "",
-                "| # | Problem | Diff | Approach | Weak on |",
-                "|---|---|---|---|---|"]
+        out += [f"## Not optimal <sub>{len(weak)}</sub>", "",
+                "Marked `@optimal no` — they work, but you know better exists. "
+                "This is the queue to come back to.", "",
+                "| # | Problem | Diff | Approach | Time | Space |",
+                "|---|---|---|---|---|---|"]
         for entry, sol in weak:
+            time, space = split_complexity(sol.complexity)
             out.append(f"| {entry.id} | {entry.name} | {entry.difficulty} "
-                       f"| {sol.label} | {', '.join(sol.suboptimal)} |")
+                       f"| {sol.label} | `{time}` "
+                       f"| {f'`{space}`' if space else ''} |")
         out.append("")
 
     multi = sorted((e for e in entries if len(e.solutions) > 1),

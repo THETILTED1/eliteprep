@@ -4,6 +4,7 @@
 
 // @related 0242-valid-anagram, 0049-group-anagrams
 
+// @optimal yes
 // @solution O(N) time O(N) space
 // @patterns hashing
 // @primary
@@ -27,6 +28,7 @@ public:
 };
 // @end
 
+// @optimal no
 // @solution O(N log N) time O(1) space
 // @patterns sorting
 //

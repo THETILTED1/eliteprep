@@ -4,6 +4,14 @@
 
 [Index](TOC.md) · [Starred](STAR.md) · Solutions · [Issues](ISSUES.md)
 
+## Not optimal <sub>1</sub>
+
+Marked `@optimal no` — they work, but you know better exists. This is the queue to come back to.
+
+| # | Problem | Diff | Approach | Time | Space |
+|---|---|---|---|---|---|
+| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | Easy | sorting | `O(N log N)` | `O(1)` |
+
 **1 problem** where a second approach earned its keep. The primary one — what you would write in an interview — is in bold.
 
 [Index](TOC.md) · [Starred](STAR.md) · Solutions · [Issues](ISSUES.md)
