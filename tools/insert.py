@@ -52,6 +52,10 @@ DECL_ONLY = re.compile(r"^(?:class|struct)\s+\w+\s*\{?$")
 BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 ACCESS = re.compile(r"^(?:public|private|protected)\s*:\s*$")
 
+# Optional, per solution. Its absence claims nothing; its presence names what
+# is wrong with an approach you decided to keep anyway.
+SUBOPTIMAL_AXES = {"time", "space", "style"}
+
 
 class InsertError(Exception):
     pass
@@ -82,6 +86,7 @@ class Block:
     patterns: str = ""
     complexity: str = ""
     primary: bool = False
+    suboptimal: list[str] = field(default_factory=list)
     body: str = ""
 
     @property
@@ -155,6 +160,7 @@ def parse(lines: list[str]) -> Draft:
                       ", ".join(gen_toc.split_patterns(tags.get("patterns", []))),
                       " ".join(tags["solution"]).strip(),
                       "primary" in tags,
+                      gen_toc.split_patterns(tags.get("suboptimal", [])),
                       body)
             )
             open_at, tags, body_start = None, {}, None
@@ -233,6 +239,12 @@ def validate(draft: Draft, sig: dict | None) -> list[str]:
             bad.append(f"solution {n} has no complexity on @solution")
         if not has_code(b.body):
             bad.append(f"solution {n} has an empty class body")
+
+    for n, b in enumerate(draft.blocks, 1):
+        for axis in b.suboptimal:
+            if axis not in SUBOPTIMAL_AXES:
+                bad.append(f"solution {n}: @suboptimal {axis!r} is not one of "
+                           + ", ".join(sorted(SUBOPTIMAL_AXES)))
 
     primary = sum(b.primary for b in draft.blocks)
     if draft.blocks and primary != 1:

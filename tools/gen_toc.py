@@ -77,6 +77,7 @@ class Solution:
     complexity: str = ""
     patterns: list[str] = field(default_factory=list)
     primary: bool = False
+    suboptimal: list[str] = field(default_factory=list)
 
     @property
     def label(self) -> str:
@@ -136,6 +137,7 @@ def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
                     complexity=" ".join(tags["solution"]).strip(),
                     patterns=split_patterns(tags.get("patterns", [])),
                     primary="primary" in tags,
+                    suboptimal=split_patterns(tags.get("suboptimal", [])),
                 )
             )
 
@@ -273,7 +275,22 @@ def split_complexity(text: str) -> tuple[str, str]:
 
 
 def emit_solutions(entries: list[Entry]) -> str:
-    out = ["# Solutions", "", GENERATED, ""]
+    out = ["# Solutions", "", GENERATED, "", nav(SOLUTIONS), ""]
+
+    weak = [(e, s) for e in entries for s in e.solutions if s.suboptimal]
+    weak.sort(key=lambda pair: (RANK.get(pair[0].difficulty, 9), pair[0].id))
+    if weak:
+        out += ["## Known suboptimal", "",
+                "Kept as written, but marked. `time` and `space` mean a better "
+                "complexity is known to exist; `style` means it works and reads "
+                "badly.", "",
+                "| # | Problem | Diff | Approach | Weak on |",
+                "|---|---|---|---|---|"]
+        for entry, sol in weak:
+            out.append(f"| {entry.id} | {entry.name} | {entry.difficulty} "
+                       f"| {sol.label} | {', '.join(sol.suboptimal)} |")
+        out.append("")
+
     multi = sorted((e for e in entries if len(e.solutions) > 1),
                    key=lambda e: (RANK.get(e.difficulty, 9), e.id))
     if not multi:

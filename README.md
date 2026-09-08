@@ -179,6 +179,7 @@ is yours:
 // @patterns hashing, sorting    <- comma-separated; labels this solution
 // @solution O(N) time O(N) space
 // @primary                      <- bare; at most one per file
+// @suboptimal time, style       <- optional; see below
 //
 class Solution { ... };
 
@@ -202,6 +203,18 @@ be translated, because NeetCode renames methods — `hasDuplicate` there is
 `containsDuplicate` on LeetCode. Design problems must implement the whole
 interface: `min-stack` requires `class MinStack` with `push`, `pop`, `top` and
 `getMin`.
+
+`@suboptimal` is the one optional tag. It names what is wrong with an approach
+you kept anyway — any of `time`, `space`, `style`, comma-separated. Everything
+so marked is collected under **Known suboptimal** in
+[SOLUTIONS.md](SOLUTIONS.md), which is the list to work through when you come
+back to clean things up. Absence claims nothing: an unmarked solution is
+unreviewed, not certified.
+
+It is deliberately manual. Neither site publishes the optimal complexity in any
+form a script can read — NeetCode's bundle carries none, its API is behind
+authentication, and LeetCode keeps complexity in the editorial, which is
+`paidOnly`. Marking your own is the only honest option.
 
 Multiple approaches live in one file so a problem stays one unit. `@solution`
 count is what surfaces a problem in [SOLUTIONS.md](SOLUTIONS.md), so that index
