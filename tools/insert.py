@@ -157,7 +157,11 @@ def parse(lines: list[str]) -> Draft:
             tags = {"solution": [value]}
             for _, held, held_value in pending:  # @optimal sits above @solution
                 tags.setdefault(held, []).append(held_value)
-            open_at, body_start, pending = i, None, []
+            # the block starts at its first tag, not at @solution, or dropping
+            # an untouched block would strip from @solution down and orphan the
+            # @optimal line above it
+            open_at = pending[0][0] if pending else i
+            body_start, pending = None, []
         elif name == "end":
             if open_at is None:
                 draft.stray_ends.append(i)

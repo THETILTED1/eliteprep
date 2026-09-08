@@ -131,8 +131,8 @@ at once rather than one at a time:
 - exactly one `@related`, comma-separated; each entry must resolve, and an
   empty list is fine
 - at least one solution block
-- every solution has `@patterns` (comma-separated), a complexity on
-  `@solution`, and a class body
+- every solution has exactly one `@optimal` reading `yes` or `no`, `@patterns`
+  (comma-separated), a complexity on `@solution`, and a class body
 - exactly one `@primary` across the file
 - every solution declares LeetCode's own class name and defines all of its
   methods, so the file is a drop-in paste back into the judge
@@ -176,10 +176,10 @@ is yours:
 // @title 0217-contains-duplicate [Easy]   <- stamped by insert from a title
 // @star yes                     <- yes or no; flags it as interesting
 
+// @optimal no                   <- yes or no, above every @solution
 // @patterns hashing, sorting    <- comma-separated; labels this solution
 // @solution O(N) time O(N) space
 // @primary                      <- bare; at most one per file
-// @suboptimal time, style       <- optional; see below
 //
 class Solution { ... };
 
@@ -204,17 +204,16 @@ be translated, because NeetCode renames methods — `hasDuplicate` there is
 interface: `min-stack` requires `class MinStack` with `push`, `pop`, `top` and
 `getMin`.
 
-`@suboptimal` is the one optional tag. It names what is wrong with an approach
-you kept anyway — any of `time`, `space`, `style`, comma-separated. Everything
-so marked is collected under **Known suboptimal** in
-[SOLUTIONS.md](SOLUTIONS.md), which is the list to work through when you come
-back to clean things up. Absence claims nothing: an unmarked solution is
-unreviewed, not certified.
+`@optimal yes` or `@optimal no` sits on the line above every `@solution`, and
+is required like the rest. Everything marked `no` collects under **Not optimal**
+in [SOLUTIONS.md](SOLUTIONS.md) with its complexity — the queue to work through
+when you come back to clean things up. Because it is mandatory rather than
+opt-in, an unmarked solution cannot slip through as tacitly fine.
 
-It is deliberately manual. Neither site publishes the optimal complexity in any
-form a script can read — NeetCode's bundle carries none, its API is behind
+It is deliberately your call. Neither site publishes the optimal complexity in
+any form a script can read: NeetCode's bundle carries none, its API is behind
 authentication, and LeetCode keeps complexity in the editorial, which is
-`paidOnly`. Marking your own is the only honest option.
+`paidOnly`. Judging your own is the only honest option.
 
 Multiple approaches live in one file so a problem stays one unit. `@solution`
 count is what surfaces a problem in [SOLUTIONS.md](SOLUTIONS.md), so that index
