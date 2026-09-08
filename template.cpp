@@ -4,8 +4,8 @@
 
 // @related
 
-// @optimal
 // @solution
+// @optimal
 // @patterns
 // @primary
 //
@@ -15,8 +15,8 @@ public:
 };
 // @end
 
-// @optimal
 // @solution
+// @optimal
 // @patterns
 //
 class Solution {

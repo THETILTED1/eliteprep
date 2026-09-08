@@ -176,7 +176,7 @@ is yours:
 // @title 0217-contains-duplicate [Easy]   <- stamped by insert from a title
 // @star yes                     <- yes or no; flags it as interesting
 
-// @optimal no                   <- yes or no, above every @solution
+// @optimal no                   <- yes or no, once per solution
 // @patterns hashing, sorting    <- comma-separated; labels this solution
 // @solution O(N) time O(N) space
 // @primary                      <- bare; at most one per file
@@ -204,8 +204,9 @@ be translated, because NeetCode renames methods — `hasDuplicate` there is
 interface: `min-stack` requires `class MinStack` with `push`, `pop`, `top` and
 `getMin`.
 
-`@optimal yes` or `@optimal no` sits on the line above every `@solution`, and
-is required like the rest. Everything marked `no` collects under **Not optimal**
+`@optimal yes` or `@optimal no` sits just below every `@solution`, and is
+required like the rest. Tag order inside a block is not enforced, so it still
+parses if you write it above. Everything marked `no` collects under **Not optimal**
 in [SOLUTIONS.md](SOLUTIONS.md) with its complexity — the queue to work through
 when you come back to clean things up. Because it is mandatory rather than
 opt-in, an unmarked solution cannot slip through as tacitly fine.

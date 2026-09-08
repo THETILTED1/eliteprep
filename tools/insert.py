@@ -52,7 +52,7 @@ DECL_ONLY = re.compile(r"^(?:class|struct)\s+\w+\s*\{?$")
 BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 ACCESS = re.compile(r"^(?:public|private|protected)\s*:\s*$")
 
-# Required once per solution, on the line above @solution.
+# Required once per solution, on the line below @solution.
 OPTIMAL_VALUES = {"yes", "no"}
 
 
@@ -155,7 +155,7 @@ def parse(lines: list[str]) -> Draft:
             if open_at is not None:
                 draft.unclosed.append(open_at)
             tags = {"solution": [value]}
-            for _, held, held_value in pending:  # @optimal sits above @solution
+            for _, held, held_value in pending:  # a tag written above its @solution
                 tags.setdefault(held, []).append(held_value)
             # the block starts at its first tag, not at @solution, or dropping
             # an untouched block would strip from @solution down and orphan the
@@ -257,7 +257,7 @@ def validate(draft: Draft, sig: dict | None) -> list[str]:
         if len(b.optimal) != 1:
             bad.append(f"solution {n}: expected exactly one @optimal, found "
                        f"{len(b.optimal)} — put '@optimal yes' or '@optimal no' "
-                       "on the line above @solution")
+                       "on the line below @solution")
         elif b.optimal[0].lower() not in OPTIMAL_VALUES:
             bad.append(f"solution {n}: @optimal must be 'yes' or 'no', not "
                        f"{b.optimal[0]!r}")

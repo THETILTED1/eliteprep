@@ -22,8 +22,8 @@ carries only what is yours:
     // @star yes                        <- yes or no
     // @related 0242-valid-anagram       <- comma-separated handles
 
-    // @optimal no                       <- yes or no, above every @solution
     // @solution O(N log N) time O(1) space
+    // @optimal no                       <- yes or no, once per solution
     // @patterns sorting                 <- comma-separated; labels this solution
     // @primary                          <- at most one per file
     //
