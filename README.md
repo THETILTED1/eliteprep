@@ -37,7 +37,8 @@ problems whose class and method names **were never verified**, because LeetCode
 publishes no C++ starter for its premium problems. Seven of the NeetCode 150 are
 premium, so this is not a corner case. It says "Nothing to report" when clean.
 
-`make search PATTERN="hashing, two pointers"` writes `search.md`: every solution
+`make search` writes `search.md`. With no `PATTERN` it lists every pattern in use, commonest first, with the problems under each — the answer to "search for what?", and the quickest way to catch `two pointers` and `two-pointers` having both crept in. With one
+(`make search PATTERN="hashing, two pointers"`) it writes: every solution
 whose `@patterns` match, with difficulty and complexity, easiest first. Matching
 is case-insensitive and by substring, so `sort` finds `sorting`, and the terms
 are a union. A miss lists every pattern you have actually used, which is a quick

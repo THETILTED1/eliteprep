@@ -401,9 +401,44 @@ def emit_solutions(entries: list[Entry]) -> str:
     return "\n".join(out)
 
 
+def emit_catalogue(entries: list[Entry]) -> tuple[str, int]:
+    """Every pattern in use, commonest first — what `make search` has to search.
+
+    Written when no PATTERN is given, because the useful answer to "search for
+    what?" is the vocabulary itself. It also shows the vocabulary drifting:
+    `two pointers` and `two-pointers` sit next to each other here, where in a
+    filtered result you would never see both.
+    """
+    by_pattern: dict[str, list[Entry]] = defaultdict(list)
+    for e in entries:
+        for s in e.solutions:
+            for p in s.patterns:
+                if e not in by_pattern[p]:
+                    by_pattern[p].append(e)
+
+    out = ["# Patterns", "", GENERATED, "", nav(SEARCH), ""]
+    if not by_pattern:
+        return "\n".join(out + ["No solution carries a `@patterns` tag yet.", ""]), 0
+
+    total = sum(len(s.patterns) > 0 for e in entries for s in e.solutions)
+    out += [f"**{plural(len(by_pattern), 'pattern')}** across "
+            f"{plural(total, 'solution')}. Narrow with "
+            '`make search PATTERN="hashing"` — matching is by substring, so '
+            "`sort` finds `sorting`, and terms are comma-separated.", "",
+            "| Pattern | Problems | |", "|---|---|---|"]
+    for pat in sorted(by_pattern, key=lambda k: (-len(by_pattern[k]), k)):
+        found = sorted(by_pattern[pat], key=lambda e: (RANK.get(e.difficulty, 9), e.id))
+        links = ", ".join(f"[{e.title}]({e.link})" for e in found)
+        out.append(f"| `{pat}` | {len(found)} | {links} |")
+    out.append("")
+    return "\n".join(out), len(by_pattern)
+
+
 def emit_search(entries: list[Entry], query: str) -> tuple[str, int]:
     """Every solution whose @patterns match, newest question of matching last."""
     terms = [x.strip().lower() for x in query.split(",") if x.strip()]
+    if not terms:
+        return emit_catalogue(entries)
     hits: list[tuple[Entry, Solution, list[str]]] = []
     for e in entries:
         for s in e.solutions:
@@ -502,8 +537,11 @@ def search(query: str) -> int:
     entries, _ = collect()
     text, n = emit_search(entries, query)
     SEARCH.write_text(text + "\n", encoding="utf-8", newline="\n")
-    rel = SEARCH.relative_to(ROOT)
-    print(f"{n} match(es) -> ./{rel}" if n else f"no matches -> ./{rel}")
+    rel = f"./{SEARCH.relative_to(ROOT)}"
+    if not [x for x in query.split(",") if x.strip()]:
+        print(f"{plural(n, 'pattern')} -> {rel}")
+    else:
+        print(f"{n} match(es) -> {rel}" if n else f"no matches -> {rel}")
     return 0
 
 
