@@ -3,7 +3,8 @@
 
     TOC.md        every solved problem, broken down by topic
     STAR.md       the starred subset, same breakdown
-    SOLUTIONS.md  what is not optimal, and where more than one approach was kept
+    SOLUTIONS.md  where more than one approach was kept, side by side
+    OPTIMAL.md    what is not optimal, by the axis it falls short on
     ISSUES.md     anything that did not fully process
 
 TOC.md is the cover-all and carries nothing but the topic breakdown, so it
@@ -54,6 +55,7 @@ SRC = ROOT / "src"          # the eighteen topic directories live here
 TOC = ROOT / "TOC.md"
 STAR = ROOT / "STAR.md"
 SOLUTIONS = ROOT / "SOLUTIONS.md"
+OPTIMAL = ROOT / "OPTIMAL.md"
 ISSUES = ROOT / "ISSUES.md"
 SEARCH = ROOT / "search.md"   # scratch output of `make search`, gitignored
 
@@ -70,6 +72,80 @@ NOT_PROBLEMS = {"template.cpp", "input.cpp"}
 TIME = re.compile(r"(O\([^)]*\))\s*time", re.I)
 SPACE = re.compile(r"(O\([^)]*\))\s*space", re.I)
 
+# @optimal yes
+# @optimal no time O(N)
+# @optimal no style
+# @optimal no time O(N) style
+#
+# `no` must name what beats it, on one or more axes. time and space carry the
+# bound that does; style carries nothing, because there is no notation for
+# "shorter than this". Requiring the axis is the same rule that made @optimal
+# mandatory in the first place: a bare `no` records that you were unhappy
+# without recording what would fix it, which is the half worth keeping.
+AXES = ("time", "space", "style")
+OPTIMAL_AXIS = re.compile(r"\b(time|space|style)\b\s*(O\([^)]*\))?", re.I)
+
+
+@dataclass
+class Optimal:
+    """A parsed @optimal value. `error` non-empty means it did not parse."""
+
+    ok: bool = True
+    gaps: list[tuple[str, str]] = field(default_factory=list)
+    error: str = ""
+
+    @property
+    def axes(self) -> list[str]:
+        return [axis for axis, _ in self.gaps]
+
+    def bound(self, axis: str) -> str:
+        return next((b for a, b in self.gaps if a == axis), "")
+
+
+def parse_optimal(value: str) -> Optimal:
+    """'no time O(N) style' -> Optimal(False, [('time', 'O(N)'), ('style', '')])."""
+    text = value.strip()
+    if not text:
+        return Optimal(error="is empty — write 'yes', or 'no' and what beats it")
+
+    head, _, rest = text.partition(" ")
+    head, rest = head.lower(), rest.strip()
+    if head == "yes":
+        if rest:
+            return Optimal(error=f"'yes' takes nothing after it, found {rest!r}")
+        return Optimal(True, [])
+    if head != "no":
+        return Optimal(error=f"must start with 'yes' or 'no', not {head!r}")
+    if not rest:
+        return Optimal(error="'no' must say what beats it, e.g. 'no time O(N)', "
+                             "'no style', 'no space O(1) style'")
+
+    gaps: list[tuple[str, str]] = []
+    pos = 0
+    for m in OPTIMAL_AXIS.finditer(rest):
+        skipped = rest[pos:m.start()].strip()
+        if skipped:
+            return Optimal(error=f"did not understand {skipped!r} — expected one "
+                                 f"of {', '.join(AXES)}")
+        axis, bound = m.group(1).lower(), (m.group(2) or "")
+        if axis == "style" and bound:
+            return Optimal(error=f"'style' takes no bound, found {bound!r}")
+        if axis != "style" and not bound:
+            return Optimal(error=f"'{axis}' needs the bound that beats it, "
+                                 f"e.g. '{axis} O(N)'")
+        if axis in [a for a, _ in gaps]:
+            return Optimal(error=f"'{axis}' named twice")
+        gaps.append((axis, bound))
+        pos = m.end()
+
+    trailing = rest[pos:].strip()
+    if trailing:
+        return Optimal(error=f"did not understand {trailing!r} — expected one of "
+                             f"{', '.join(AXES)}")
+    if not gaps:
+        return Optimal(error=f"names no axis — expected one of {', '.join(AXES)}")
+    return Optimal(False, gaps)
+
 
 def plural(n: int, word: str) -> str:
     return f"{n} {word}" if n == 1 else f"{n} {word}s"
@@ -80,7 +156,7 @@ class Solution:
     complexity: str = ""
     patterns: list[str] = field(default_factory=list)
     primary: bool = False
-    optimal: bool = True
+    optimal: Optimal = field(default_factory=Optimal)
 
     @property
     def label(self) -> str:
@@ -111,6 +187,18 @@ class Entry:
     def name(self) -> str:
         return f"[{self.title}]({self.link})" + (" ⭐" if self.star else "")
 
+    @property
+    def optimal_mark(self) -> str:
+        """One glyph for the whole problem: clean only if every solution is.
+
+        A problem is not half-done because its second approach is the slow one
+        you kept on purpose — but the mark is about whether anything here is
+        still owed work, and a `no` anywhere means something is.
+        """
+        if not self.solutions:
+            return ""
+        return "✓" if all(s.optimal.ok for s in self.solutions) else "·"
+
 
 def split_patterns(values: list[str]) -> list[str]:
     """Comma-separated, so a pattern can be several words: 'two pointers'."""
@@ -140,8 +228,7 @@ def parse_tags(path: Path) -> tuple[bool, list[str], list[Solution]]:
                     complexity=" ".join(tags["solution"]).strip(),
                     patterns=split_patterns(tags.get("patterns", [])),
                     primary="primary" in tags,
-                    optimal=all(v.strip().lower() == "yes"
-                                for v in tags.get("optimal", ["yes"])),
+                    optimal=parse_optimal(" ".join(tags.get("optimal", ["yes"]))),
                 )
             )
 
@@ -224,7 +311,8 @@ GENERATED = "<!-- Generated by tools/gen_toc.py. Do not edit by hand. -->"
 
 def nav(current: Path) -> str:
     links = [("TOC.md", "Index"), ("STAR.md", "Starred"),
-             ("SOLUTIONS.md", "Solutions"), ("ISSUES.md", "Issues")]
+             ("SOLUTIONS.md", "Solutions"), ("OPTIMAL.md", "Optimal"),
+             ("ISSUES.md", "Issues")]
     return " · ".join(
         label if f == current.name else f"[{label}]({f})" for f, label in links
     )
@@ -237,11 +325,11 @@ def topic_tables(entries: list[Entry], out: list[str], star: bool = True) -> Non
     for topic in sorted(by_topic):
         out.append(f"## {pretty(topic)}")
         out.append("")
-        out.append("| # | Problem | Diff |")
-        out.append("|---|---|---|")
+        out.append("| # | Problem | Diff | Opt |")
+        out.append("|---|---|---|---|")
         for e in sorted(by_topic[topic], key=lambda e: (RANK.get(e.difficulty, 9), e.id)):
             name = e.name if star else f"[{e.title}]({e.link})"
-            out.append(f"| {e.id} | {name} | {e.difficulty} |")
+            out.append(f"| {e.id} | {name} | {e.difficulty} | {e.optimal_mark} |")
         out.append("")
 
 
@@ -280,21 +368,6 @@ def split_complexity(text: str) -> tuple[str, str]:
 
 def emit_solutions(entries: list[Entry]) -> str:
     out = ["# Solutions", "", GENERATED, "", nav(SOLUTIONS), ""]
-
-    weak = [(e, s) for e in entries for s in e.solutions if not s.optimal]
-    weak.sort(key=lambda pair: (RANK.get(pair[0].difficulty, 9), pair[0].id))
-    if weak:
-        out += [f"## Not optimal <sub>{len(weak)}</sub>", "",
-                "Marked `@optimal no` — they work, but you know better exists. "
-                "This is the queue to come back to.", "",
-                "| # | Problem | Diff | Approach | Time | Space |",
-                "|---|---|---|---|---|---|"]
-        for entry, sol in weak:
-            time, space = split_complexity(sol.complexity)
-            out.append(f"| {entry.id} | {entry.name} | {entry.difficulty} "
-                       f"| {sol.label} | `{time}` "
-                       f"| {f'`{space}`' if space else ''} |")
-        out.append("")
 
     multi = sorted((e for e in entries if len(e.solutions) > 1),
                    key=lambda e: (RANK.get(e.difficulty, 9), e.id))
@@ -350,6 +423,60 @@ def emit_search(entries: list[Entry], query: str) -> tuple[str, int]:
                    f"| `{time}` | {f'`{space}`' if space else ''} |")
     out.append("")
     return "\n".join(out), len(hits)
+
+
+AXIS_BLURB = {
+    "time": ("Time", "A better bound exists and you know what it is."),
+    "space": ("Space", "The same answer for less memory."),
+    "style": ("Style", "The complexity is already optimal — what is owed here "
+                       "is a clearer way of writing it."),
+}
+
+
+def emit_optimal(entries: list[Entry]) -> tuple[str, int]:
+    """Everything marked `@optimal no`, grouped by the axis it falls short on.
+
+    A solution that names two axes appears under both: the time debt and the
+    style debt on one problem are different jobs, done on different days.
+    """
+    out = ["# Optimal", "", GENERATED, "", nav(OPTIMAL), ""]
+
+    weak = [(e, s) for e in entries for s in e.solutions if not s.optimal.ok]
+    total = sum(len(e.solutions) for e in entries)
+    if not weak:
+        clean = f"All {plural(total, 'solution')} are marked optimal." if total \
+            else "Nothing solved yet."
+        return "\n".join(out + [clean, ""]), 0
+
+    out += [f"**{plural(len(weak), 'solution')}** of {total} marked "
+            "`@optimal no`. They work — this is what is still owed on them.", ""]
+
+    for axis in AXES:
+        rows = [(e, s) for e, s in weak if axis in s.optimal.axes]
+        if not rows:
+            continue
+        rows.sort(key=lambda pair: (RANK.get(pair[0].difficulty, 9), pair[0].id))
+        heading, blurb = AXIS_BLURB[axis]
+        out += [f"## {heading} <sub>{len(rows)}</sub>", "", blurb, ""]
+        if axis == "style":
+            out += ["| # | Problem | Diff | Approach | Time | Space |",
+                    "|---|---|---|---|---|---|"]
+        else:
+            out += [f"| # | Problem | Diff | Approach | Has | Beaten by |",
+                    "|---|---|---|---|---|---|"]
+        for entry, sol in rows:
+            time, space = split_complexity(sol.complexity)
+            if axis == "style":
+                out.append(f"| {entry.id} | {entry.name} | {entry.difficulty} "
+                           f"| {sol.label} | `{time}` "
+                           f"| {f'`{space}`' if space else ''} |")
+            else:
+                has = time if axis == "time" else space
+                out.append(f"| {entry.id} | {entry.name} | {entry.difficulty} "
+                           f"| {sol.label} | `{has}` "
+                           f"| `{sol.optimal.bound(axis)}` |")
+        out.append("")
+    return "\n".join(out), len(weak)
 
 
 def search(query: str) -> int:
@@ -409,13 +536,16 @@ def main(failures: list[str] | None = None) -> int:
         return search(" ".join(sys.argv[2:]))
     entries, warnings = collect()
     issues, n_issues = emit_issues(entries, warnings, failures or [])
+    optimal, n_weak = emit_optimal(entries)
     for path, text in ((TOC, emit_toc(entries)), (STAR, emit_star(entries)),
-                       (SOLUTIONS, emit_solutions(entries)), (ISSUES, issues)):
+                       (SOLUTIONS, emit_solutions(entries)),
+                       (OPTIMAL, optimal), (ISSUES, issues)):
         path.write_text(text + "\n", encoding="utf-8", newline="\n")
     for msg in warnings:
         print(f"warning: {msg}", file=sys.stderr)
-    print(f"wrote TOC.md, STAR.md, SOLUTIONS.md, ISSUES.md "
+    print(f"wrote TOC.md, STAR.md, SOLUTIONS.md, OPTIMAL.md, ISSUES.md "
           f"({plural(len(entries), 'problem')} solved"
+          + (f", {n_weak} not optimal" if n_weak else "")
           + (f", {n_issues} issue(s) -> ./ISSUES.md" if n_issues else "") + ")")
     return 0
 

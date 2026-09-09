@@ -4,11 +4,11 @@
 
 **1 problem** worth coming back to.
 
-[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Issues](ISSUES.md)
+[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Issues](ISSUES.md)
 
 ## Arrays & Hashing
 
-| # | Problem | Diff |
-|---|---|---|
-| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy |
+| # | Problem | Diff | Opt |
+|---|---|---|---|
+| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy | · |
 

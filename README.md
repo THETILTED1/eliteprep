@@ -26,6 +26,7 @@ Three generated indexes, all built from the solved files alone:
 | **[TOC.md](TOC.md)** | every solved problem, broken down by topic |
 | **[STAR.md](STAR.md)** | the starred subset, same breakdown |
 | **[SOLUTIONS.md](SOLUTIONS.md)** | problems that earned more than one approach, side by side |
+| **[OPTIMAL.md](OPTIMAL.md)** | what is not optimal, grouped by the axis it falls short on |
 | **[ISSUES.md](ISSUES.md)** | anything that did not fully process, so it is not lost in scrollback |
 
 Everything is ordered by ascending difficulty, then by problem number.
@@ -71,7 +72,7 @@ the two sides occupy disjoint paths — the tool is `tools/`, `Makefile`,
 nothing to collide. The exception is the three generated indexes, which both
 sides rewrite. They are derived, so take yours and rebuild rather than merging:
 
-    git checkout --ours TOC.md STAR.md SOLUTIONS.md && make sync
+    git checkout --ours TOC.md STAR.md SOLUTIONS.md OPTIMAL.md && make sync
 
 Develop the tool in the public repo rather than the private one, and the flow
 stays one-directional. `tools/signatures.json` is gitignored for the same
@@ -131,7 +132,8 @@ at once rather than one at a time:
 - exactly one `@related`, comma-separated; each entry must resolve, and an
   empty list is fine
 - at least one solution block
-- every solution has exactly one `@optimal` reading `yes` or `no`, `@patterns`
+- every solution has exactly one `@optimal`, reading `yes` or `no` plus the
+  axis that beats it, `@patterns`
   (comma-separated), a complexity on `@solution`, and a class body
 - exactly one `@primary` across the file
 - every solution declares LeetCode's own class name and defines all of its
@@ -176,7 +178,7 @@ is yours:
 // @title 0217-contains-duplicate [Easy]   <- stamped by insert from a title
 // @star yes                     <- yes or no; flags it as interesting
 
-// @optimal no                   <- yes or no, once per solution
+// @optimal no time O(N)         <- yes, or no and what beats it
 // @patterns hashing, sorting    <- comma-separated; labels this solution
 // @solution O(N) time O(N) space
 // @primary                      <- bare; at most one per file
@@ -204,12 +206,26 @@ be translated, because NeetCode renames methods — `hasDuplicate` there is
 interface: `min-stack` requires `class MinStack` with `push`, `pop`, `top` and
 `getMin`.
 
-`@optimal yes` or `@optimal no` sits just below every `@solution`, and is
-required like the rest. Tag order inside a block is not enforced, so it still
-parses if you write it above. Everything marked `no` collects under **Not optimal**
-in [SOLUTIONS.md](SOLUTIONS.md) with its complexity — the queue to work through
-when you come back to clean things up. Because it is mandatory rather than
-opt-in, an unmarked solution cannot slip through as tacitly fine.
+`@optimal` sits just below every `@solution` and is required like the rest.
+Tag order inside a block is not enforced, so it still parses if you write it
+above. It reads `yes`, or `no` followed by the axis it falls short on:
+
+    // @optimal yes
+    // @optimal no time O(N)          <- a better bound exists, and this is it
+    // @optimal no style              <- complexity is optimal; the writing is not
+    // @optimal no space O(1) style   <- more than one axis is owed
+
+`time` and `space` carry the bound that beats them; `style` carries nothing,
+because there is no notation for "shorter than this". Naming the axis is the
+same rule that made `@optimal` mandatory in the first place: a bare `no` records
+that you were unhappy without recording what would fix it, which is the half
+worth keeping. So a bare `no` is rejected.
+
+Everything marked `no` collects in [OPTIMAL.md](OPTIMAL.md), one section per
+axis, with the bound it has beside the bound that beats it. A solution owing two
+axes appears under both — the time debt and the style debt are different jobs,
+done on different days. TOC.md carries a single `Opt` column: `✓` when every
+solution on a problem is optimal, `·` when anything is still owed.
 
 It is deliberately your call. Neither site publishes the optimal complexity in
 any form a script can read: NeetCode's bundle carries none, its API is behind
