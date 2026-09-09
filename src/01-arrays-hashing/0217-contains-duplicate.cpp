@@ -29,7 +29,7 @@ public:
 // @end
 
 // @solution O(N log N) time O(1) space
-// @optimal no
+// @optimal no time O(N)
 // @patterns sorting
 //
 // Space-efficient in-place solution

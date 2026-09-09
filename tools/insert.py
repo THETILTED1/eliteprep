@@ -53,7 +53,6 @@ BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 ACCESS = re.compile(r"^(?:public|private|protected)\s*:\s*$")
 
 # Required once per solution, on the line below @solution.
-OPTIMAL_VALUES = {"yes", "no"}
 
 
 class InsertError(Exception):
@@ -256,11 +255,16 @@ def validate(draft: Draft, sig: dict | None) -> list[str]:
     for n, b in enumerate(draft.blocks, 1):
         if len(b.optimal) != 1:
             bad.append(f"solution {n}: expected exactly one @optimal, found "
-                       f"{len(b.optimal)} — put '@optimal yes' or '@optimal no' "
-                       "on the line below @solution")
-        elif b.optimal[0].lower() not in OPTIMAL_VALUES:
-            bad.append(f"solution {n}: @optimal must be 'yes' or 'no', not "
-                       f"{b.optimal[0]!r}")
+                       f"{len(b.optimal)} — put '@optimal yes' or '@optimal no "
+                       "<axis>' on the line below @solution")
+        else:
+            # `no` has to name what beats it, and on which axis, or the entry in
+            # OPTIMAL.md would say a solution is owed work without saying what.
+            parsed = gen_toc.parse_optimal(b.optimal[0])
+            if parsed.error:
+                bad.append(f"solution {n}: @optimal {parsed.error}\n"
+                           "    yes | no time O(N) | no style | "
+                           "no space O(1) style")
 
     primary = sum(b.primary for b in draft.blocks)
     if draft.blocks and primary != 1:
