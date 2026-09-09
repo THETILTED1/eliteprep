@@ -221,11 +221,18 @@ same rule that made `@optimal` mandatory in the first place: a bare `no` records
 that you were unhappy without recording what would fix it, which is the half
 worth keeping. So a bare `no` is rejected.
 
-Everything marked `no` collects in [OPTIMAL.md](OPTIMAL.md), one section per
-axis, with the bound it has beside the bound that beats it. A solution owing two
-axes appears under both — the time debt and the style debt are different jobs,
-done on different days. TOC.md carries a single `Opt` column: `✓` when every
-solution on a problem is optimal, `·` when anything is still owed.
+[OPTIMAL.md](OPTIMAL.md) collects the problems where **no** solution is marked
+`yes`, one section per axis, with the bound it has beside the bound that beats
+it. A solution owing two axes appears under both — the time debt and the style
+debt are different jobs, done on different days.
+
+Any, not every. A `no` sitting beside a `yes` on the same problem is an
+alternative that was kept — the O(N log N) sort next to the O(N) hash set,
+there because it teaches something or trades time for space — and it does not
+put the problem back in the queue. Once the best answer is written down the
+problem is done, and comparing the approaches is what
+[SOLUTIONS.md](SOLUTIONS.md) is for. So TOC.md's `Opt` column reads `✓` when an
+optimal solution is present and `·` when there is not one yet.
 
 It is deliberately your call. Neither site publishes the optimal complexity in
 any form a script can read: NeetCode's bundle carries none, its API is behind

@@ -4,13 +4,5 @@
 
 [Index](TOC.md) · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · Optimal · [Issues](ISSUES.md)
 
-**1 solution** of 2 marked `@optimal no`. They work — this is what is still owed on them.
-
-## Time <sub>1</sub>
-
-A better bound exists and you know what it is.
-
-| # | Problem | Diff | Approach | Has | Beaten by |
-|---|---|---|---|---|---|
-| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | Easy | sorting | `O(N log N)` | `O(N)` |
+Every problem has an optimal solution. 1 other solution marked `no` sits beside an optimal one on the same problem — those were kept on purpose, and are in [SOLUTIONS.md](SOLUTIONS.md).
 
