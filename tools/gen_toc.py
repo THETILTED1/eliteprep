@@ -69,8 +69,30 @@ RANK = {d: i for i, d in enumerate(DIFFICULTIES)}
 SOURCE_EXT = {".cpp", ".cc"}
 NOT_PROBLEMS = {"template.cpp", "input.cpp"}
 
-TIME = re.compile(r"(O\([^)]*\))\s*time", re.I)
-SPACE = re.compile(r"(O\([^)]*\))\s*space", re.I)
+LABEL = re.compile(r"\s*(time|space)\b", re.I)
+AXIS_WORD = re.compile(r"(time|space|style)\b", re.I)
+
+
+def read_bound(text: str, pos: int) -> tuple[str, int]:
+    r"""Read a balanced `O(...)` at pos. Returns ('', pos) if there is none.
+
+    Parenthesis counting rather than a regex, because a bound may nest:
+    O(log (min(M, N))) is one bound, and `O\([^)]*\)` stops at the first
+    close paren and mangles it.
+    """
+    while pos < len(text) and text[pos].isspace():
+        pos += 1
+    if text[pos:pos + 2].lower() != "o(":
+        return "", pos
+    depth = 0
+    for i in range(pos + 1, len(text)):
+        if text[i] == "(":
+            depth += 1
+        elif text[i] == ")":
+            depth -= 1
+            if depth == 0:
+                return text[pos:i + 1], i + 1
+    return "", pos  # unbalanced; treated as absent
 
 # @optimal yes
 # @optimal no time O(N)
@@ -83,7 +105,6 @@ SPACE = re.compile(r"(O\([^)]*\))\s*space", re.I)
 # mandatory in the first place: a bare `no` records that you were unhappy
 # without recording what would fix it, which is the half worth keeping.
 AXES = ("time", "space", "style")
-OPTIMAL_AXIS = re.compile(r"\b(time|space|style)\b\s*(O\([^)]*\))?", re.I)
 
 
 @dataclass
@@ -122,13 +143,18 @@ def parse_optimal(value: str) -> Optimal:
 
     gaps: list[tuple[str, str]] = []
     pos = 0
-    for m in OPTIMAL_AXIS.finditer(rest):
-        skipped = rest[pos:m.start()].strip()
-        if skipped:
-            return Optimal(error=f"did not understand {skipped!r} — expected one "
-                                 f"of {', '.join(AXES)}")
-        axis, bound = m.group(1).lower(), (m.group(2) or "")
-        if axis == "style" and bound:
+    while pos < len(rest):
+        while pos < len(rest) and rest[pos].isspace():
+            pos += 1
+        if pos >= len(rest):
+            break
+        m = AXIS_WORD.match(rest, pos)
+        if not m:
+            return Optimal(error=f"did not understand {rest[pos:].strip()!r} — "
+                                 f"expected one of {', '.join(AXES)}")
+        axis = m.group(1).lower()
+        bound, pos = read_bound(rest, m.end())  # balanced, so O(log (min(M, N)))
+        if axis == "style" and bound:           # survives intact
             return Optimal(error=f"'style' takes no bound, found {bound!r}")
         if axis != "style" and not bound:
             return Optimal(error=f"'{axis}' needs the bound that beats it, "
@@ -136,12 +162,7 @@ def parse_optimal(value: str) -> Optimal:
         if axis in [a for a, _ in gaps]:
             return Optimal(error=f"'{axis}' named twice")
         gaps.append((axis, bound))
-        pos = m.end()
 
-    trailing = rest[pos:].strip()
-    if trailing:
-        return Optimal(error=f"did not understand {trailing!r} — expected one of "
-                             f"{', '.join(AXES)}")
     if not gaps:
         return Optimal(error=f"names no axis — expected one of {', '.join(AXES)}")
     return Optimal(False, gaps)
@@ -369,9 +390,19 @@ def emit_star(entries: list[Entry]) -> str:
 
 def split_complexity(text: str) -> tuple[str, str]:
     """'O(N) time O(1) space' -> ('O(N)', 'O(1)'); anything else passes through."""
-    time, space = TIME.search(text), SPACE.search(text)
-    if time and space:
-        return time.group(1), space.group(1)
+    found: dict[str, str] = {}
+    pos = 0
+    while pos < len(text):
+        bound, after = read_bound(text, pos)
+        if not bound:
+            pos += 1
+            continue
+        label = LABEL.match(text, after)
+        if label:
+            found.setdefault(label.group(1).lower(), bound)
+        pos = after
+    if "time" in found and "space" in found:
+        return found["time"], found["space"]
     return text, ""
 
 
