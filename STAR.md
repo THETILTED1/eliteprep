@@ -6,11 +6,11 @@
 
 [Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Issues](ISSUES.md)
 
-**Opt** · ✓ every solution optimal · [·](OPTIMAL.md) something is still owed
+**Opt** · ✓ an optimal solution is here · [·](OPTIMAL.md) not one yet
 
 ## Arrays & Hashing
 
 | # | Problem | Diff | Opt |
 |---|---|---|---|
-| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy | [·](OPTIMAL.md) |
+| 217 | [Contains Duplicate](src/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy | ✓ |
 
