@@ -1,6 +1,7 @@
 # make new                                      start input.cpp from template.cpp
 # make sync                                     tidy filed files, rebuild indexes
-# make search PATTERN="hashing, sorting"        list matching solutions in search.md
+# make search                                  list every pattern in use
+# make search PATTERN="hashing, sorting"        narrow to matching solutions
 # make insert                                   file input.cpp
 # make insert SRC=other.cpp TOPIC=arrays-hashing
 #
