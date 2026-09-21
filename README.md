@@ -56,8 +56,9 @@ left.
 The tool is worth publishing; your solutions probably are not. Keep two repos.
 
 **Public** — this one: `tools/`, `Makefile`, `template.cpp`, `.clang-format`,
-the README and one example. Mark it a template repository on GitHub so anyone
-can press *Use this template* and get their own copy, private if they want.
+`.clangd`, `.vscode/`, the README and one example. Mark it a template
+repository on GitHub so anyone can press *Use this template* and get their own
+copy, private if they want.
 
 **Private** — your solutions, made from the public one, which stays attached as
 `upstream` so improvements to the tool keep flowing in:
@@ -69,9 +70,10 @@ can press *Use this template* and get their own copy, private if they want.
 
 Take later tool changes with `git pull upstream main`. This stays quiet because
 the two sides occupy disjoint paths — the tool is `tools/`, `Makefile`,
-`template.cpp` and `.clang-format`; your work is `src/` — so there is
-nothing to collide. The exception is the three generated indexes, which both
-sides rewrite. They are derived, so take yours and rebuild rather than merging:
+`template.cpp`, `.clang-format`, `.clangd` and `.vscode/`; your work is `src/`
+— so there is nothing to collide. The exception is the three generated indexes,
+which both sides rewrite. They are derived, so take yours and rebuild rather
+than merging:
 
     git checkout --ours TOC.md STAR.md SOLUTIONS.md OPTIMAL.md && make sync
 
@@ -196,8 +198,8 @@ they appear, and the template puts `@related` at the foot of the file, where a
 stored as handles, so `contains-duplicate, GROUP ANAGRAMS` is filed as
 `0217-contains-duplicate, 0049-group-anagrams`. Solutions are labelled by their `@patterns`, not by class name, so every class
 in a file carries the *same* name — LeetCode's — and that is enforced. Nothing
-is compiled, so the redefinition only matters to a future runner script, which
-can rename as it stitches.
+is compiled, so the redefinition costs nothing here; it is
+[the editor](#editor-support) that has to be told what to make of it.
 
 The class and method names come from LeetCode's own C++ starter snippet,
 fetched once per problem and cached in `tools/signatures.json`. A solution
@@ -276,6 +278,74 @@ re-inserting. If `clang-format` is not on PATH, both commands say so and leave
 the code unchanged rather than failing — formatting is cosmetic and never
 blocks.
 
+## Editor support
+
+Hover over `unordered_map` and be told what it is; jump from `push_back` into
+the header it lives in; complete `nums.` — through a bare `using namespace std`
+that is nowhere in the file, in a file that has no includes and three classes
+called `Solution`. Set up once, runs in the background, and not a byte of any
+solution changes.
+
+Open the repository in VS Code with the
+[clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+installed and it works; [`.vscode/settings.json`](.vscode/settings.json) is
+committed. Any other editor wants the same server command:
+
+    python3 tools/clangd_proxy.py --background-index
+
+On Windows that is `python`, in `clangd.path` as much as anywhere else; the
+Makefile's interpreter lookup does not reach here, because the editor starts
+this one.
+
+Two things stand between a filed solution and a C++ parser, and they are
+handled in different places.
+
+The includes and the `using` are missing, and that is the easy half.
+[`.clangd`](.clangd) forces [`tools/prelude.hpp`](tools/prelude.hpp) in front of
+the first line, which is what the judge has effectively already included by the
+time it compiles you. It names the headers one by one rather than reaching for
+`<bits/stdc++.h>`, which is a libstdc++ extension and absent on libc++ and
+MSVC. The file on disk stays paste-ready.
+
+The classes are the hard half. Clang does not recover from a redefinition — it
+drops the second `class Solution` outright — so an editor reading the file as it
+stands goes blind from the second `@solution` onwards, which is exactly where a
+file with two approaches is interesting. `tools/clangd_proxy.py` sits between the
+editor and clangd and rewrites the text on its way past, leaving the file alone.
+Each `@solution`/`@end` pair becomes a namespace, which makes the approaches
+distinct without renaming anything you wrote.
+
+The same pass turns the judge's helper types into real code. `ListNode`,
+`TreeNode`, the several unrelated shapes of `Node` and the premium `Interval`
+are all *already in the files that use them*, commented out exactly as LeetCode
+ships them, so there is no table of them to keep anywhere and no request to
+make: `Node` means the graph node in `0133-clone-graph` and the random-pointer
+node in `0138-copy-list-with-random-pointer` because each file is read on its
+own and each says so itself.
+
+Every edit the rewrite makes lands on a line that carries no code — a marker
+comment, or the decoration down the left edge of a block comment — and replaces
+exactly as many characters as it removes. So the line count and the column of
+every character of real code survive, and a position in what clangd read is the
+same position in the file on disk. Nothing is mapped and nothing can drift.
+`python3 tools/stitch.py src/11-graphs/0127-word-ladder.cpp` prints what clangd
+sees, if you want to look at it.
+
+**Nothing that can write to a file is offered.** clangd is reasoning about text
+that is not on disk, so an edit it produced could land anywhere. Rename,
+format, quick-fix and execute-command are withdrawn from the capabilities the
+editor is told about, before it ever learns they existed, and the server runs
+with `--header-insertion=never` so a completion cannot add an include. What is
+left — hover, go to definition, find references, completion, signature help,
+document symbols, diagnostics, inlay hints — is read-only, and is the whole of
+what a repository of solved problems wants from a language server. Formatting
+stays where it already was, in `make insert` and `make sync`.
+
+A draft whose `@solution` and `@end` markers do not yet balance is passed
+through unrewritten rather than half-wrapped, so a file being edited behaves as
+it would with no proxy at all instead of burying the real diagnostics under a
+cascade. Diagnostics are otherwise the compiler's own, and quiet.
+
 ## Requirements
 
 Python 3.9 or newer. **There is no virtualenv and nothing to install** — every
@@ -304,6 +374,13 @@ If nothing suitable turns up, both `insert` and `sync` say so and file the code
 unchanged — formatting never blocks. The quickest fix on a machine with neither
 LLVM nor VS Code is `pip install clang-format`, which ships the binary as a
 wheel and so needs no compiler.
+
+`clangd` is optional too, and wanted only by [editor support](#editor-support)
+— nothing in `make` goes near it. Any version will do, since the rewrite that
+makes these files parseable is done before clangd sees them. It is found the
+same way: `$CLANGD`, then `clangd` on `PATH`, then the copy the VS Code clangd
+extension downloads for itself, then versioned names and the usual install
+roots.
 
 ### Portability
 

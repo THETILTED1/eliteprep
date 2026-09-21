@@ -7,3 +7,6 @@ tools/signatures.json
 
 # scratch output of `make search`
 search.md
+
+# clangd index cache
+.cache/

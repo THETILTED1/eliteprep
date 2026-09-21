@@ -1,0 +1,18 @@
+{
+    // Read the solutions through tools/clangd_proxy.py rather than clangd
+    // itself. It rewrites each @solution block into its own namespace on the
+    // way past, so every approach in a file resolves and not just the first,
+    // and it withdraws every capability that could write to a file. See
+    // "Editor support" in the README.
+    "clangd.path": "python3",
+    "clangd.arguments": [
+        "${workspaceFolder}/tools/clangd_proxy.py",
+        "--background-index"
+    ],
+
+    // The C/C++ extension is often installed for the clang-format it bundles.
+    // Its IntelliSense reads the file as it is on disk, so it reports every
+    // second solution as a redefinition and every helper type as undeclared —
+    // true of the file, useless to you, and on top of clangd's own answers.
+    "C_Cpp.intelliSenseEngine": "disabled"
+}

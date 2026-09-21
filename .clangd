@@ -1,0 +1,24 @@
+# What clangd needs to read a solution, which is not a translation unit: no
+# includes, no `using namespace std;`, several same-named classes to a file.
+#
+# The includes arrive by force, in front of the first line, so the source stays
+# paste-ready. The same-named classes are handled by tools/clangd_proxy.py,
+# which the editor should be pointed at instead of clangd — without it you get
+# the first solution in each file and nothing after it.
+#
+# Relative paths here resolve against the directory of the file being edited,
+# not this one, so the include path names both places a solution can sit: the
+# root, where input.cpp is drafted, and src/NN-topic/, two levels down.
+
+CompileFlags:
+  Add:
+    - -xc++
+    - -std=c++23
+    - -I.
+    - -I../..
+    - -include
+    - tools/prelude.hpp
+
+Diagnostics:
+  # `move(x)` is how these files are written, and how the judge takes them.
+  Suppress: [unqualified-std-cast-call]
