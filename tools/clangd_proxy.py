@@ -59,6 +59,18 @@ INSTALL_HINT = (
 )
 
 
+def add_extension_install(storage: Path, add) -> None:
+    """Any clangd the VS Code extension unpacked under this globalStorage.
+
+    It lands at install/<version>/clangd_<version>/bin/clangd, newest first.
+    """
+    root = storage / "llvm-vs-code-extensions.vscode-clangd" / "install"
+    if not root.is_dir():
+        return
+    for exe in sorted(root.glob("*/*/bin/clangd*"), reverse=True):
+        add(exe)
+
+
 def find_clangd() -> str | None:
     """Locate a clangd, best guess first. Any version will do."""
     found: list[str] = []
@@ -70,15 +82,7 @@ def find_clangd() -> str | None:
     add(os.environ.get("CLANGD"))  # explicit override wins
     add(shutil.which("clangd"))
 
-    # The clangd extension downloads its own, which is often the only one on a
-    # machine that has never installed LLVM.
-    for base in (".config", ".local/share", "AppData/Local"):
-        root = Path.home() / base / "clangd" / "install"
-        if root.is_dir():
-            for exe in sorted(root.glob("*/*/bin/clangd*"), reverse=True):
-                add(exe)
-
-    for version in range(40, 13, -1):
+    for version in range(40, 13, -1):  # newest first
         add(shutil.which(f"clangd-{version}"))
 
     for pattern in ("/usr/lib/llvm-*/bin/clangd",
@@ -91,6 +95,20 @@ def find_clangd() -> str | None:
         if parent.is_dir():
             for exe in sorted(parent.glob(Path(head).name + "*" + tail), reverse=True):
                 add(exe)
+
+    # Last, because it is the fallback rather than the choice: the VS Code
+    # clangd extension downloads its own copy into its global storage when it
+    # finds none on PATH, and that copy tracks the latest release rather than
+    # whatever you installed on purpose. It is often the only clangd on a
+    # machine that has never installed LLVM, which is the case worth covering.
+    for editor in ("Code", "Code - Insiders", "VSCodium"):
+        for data in (Path.home() / ".config" / editor,
+                     Path.home() / "Library/Application Support" / editor,
+                     Path.home() / "AppData/Roaming" / editor):
+            add_extension_install(data / "User/globalStorage", add)
+    for server in (".vscode-server", ".vscode-server-insiders"):
+        add_extension_install(Path.home() / server / "data/User/globalStorage", add)
+
     return found[0] if found else None
 
 
@@ -210,6 +228,12 @@ def main(argv: list[str]) -> int:
     if exe is None:
         print(f"clangd_proxy: no clangd found — {INSTALL_HINT}", file=sys.stderr)
         return 1
+
+    # Being asked what this is rather than spoken to. Editors probe a language
+    # server with --version before they will use it, and the honest answer is
+    # the clangd underneath, not the interpreter that happens to run this.
+    if any(a in ("--version", "--help") for a in argv):
+        return subprocess.run([exe, *argv]).returncode
 
     child = subprocess.Popen(
         [exe, "--header-insertion=never", *argv],

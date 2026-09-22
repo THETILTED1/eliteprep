@@ -10,6 +10,15 @@
         "--background-index"
     ],
 
+    // Off by default, pinned because of what clangd.path is here: the update
+    // check probes it with --version and looks for "clangd version", so it
+    // would read the interpreter's own version and offer a download you do not
+    // need. (The prompt you get when clangd is simply missing from PATH is a
+    // different one, and no setting silences it — install a clangd instead.)
+    "clangd.checkUpdates": false,
+    // Re-read .clangd on change without a manual reload.
+    "clangd.onConfigChanged": "restart",
+
     // The C/C++ extension is often installed for the clang-format it bundles.
     // Its IntelliSense reads the file as it is on disk, so it reports every
     // second solution as a redefinition and every helper type as undeclared —

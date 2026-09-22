@@ -297,6 +297,18 @@ On Windows that is `python`, in `clangd.path` as much as anywhere else; the
 Makefile's interpreter lookup does not reach here, because the editor starts
 this one.
 
+If the extension offers to download a clangd for you, that is not this repo
+asking: it prompts whenever `clangd.path` names something that is not there,
+and its default is a bare `clangd`, which plenty of machines do not have even
+with LLVM installed — the packages are often called `clangd-18`, `clangd-22`
+and so on. Installing one on PATH is the fix, and it is worth doing whatever
+this repo needs, since the download it offers instead is invisible to every
+other tool you own. The settings here point `clangd.path` at an interpreter, so
+the prompt does not arise; they also pin `clangd.checkUpdates` off, because the
+update check probes that path with `--version` and would read the interpreter's
+version rather than a clangd's. The proxy answers `--version` with the clangd
+it resolved, for anything that asks it directly.
+
 Two things stand between a filed solution and a C++ parser, and they are
 handled in different places.
 
