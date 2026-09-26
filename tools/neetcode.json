@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07",
+ "generated": "2026-09-26",
  "source": "https://neetcode.io/main.f39af0c52a4e9fb5.js",
  "problems": [
   {
@@ -7,6 +7,7 @@
    "slug": "concatenation-of-array",
    "nc_slug": "concatenation-of-array",
    "title": "Concatenation of Array",
+   "nc_title": "Concatenation of Array",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -16,6 +17,7 @@
    "slug": "contains-duplicate",
    "nc_slug": "duplicate-integer",
    "title": "Contains Duplicate",
+   "nc_title": "Contains Duplicate",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -25,6 +27,7 @@
    "slug": "valid-anagram",
    "nc_slug": "is-anagram",
    "title": "Valid Anagram",
+   "nc_title": "Valid Anagram",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -34,6 +37,7 @@
    "slug": "two-sum",
    "nc_slug": "two-integer-sum",
    "title": "Two Sum",
+   "nc_title": "Two Sum",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -43,6 +47,7 @@
    "slug": "longest-common-prefix",
    "nc_slug": "longest-common-prefix",
    "title": "Longest Common Prefix",
+   "nc_title": "Longest Common Prefix",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -52,6 +57,7 @@
    "slug": "group-anagrams",
    "nc_slug": "anagram-groups",
    "title": "Group Anagrams",
+   "nc_title": "Group Anagrams",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -61,6 +67,7 @@
    "slug": "remove-element",
    "nc_slug": "remove-element",
    "title": "Remove Element",
+   "nc_title": "Remove Element",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -70,6 +77,7 @@
    "slug": "majority-element",
    "nc_slug": "majority-element",
    "title": "Majority Element",
+   "nc_title": "Majority Element",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -79,6 +87,7 @@
    "slug": "design-hashset",
    "nc_slug": "design-hashset",
    "title": "Design HashSet",
+   "nc_title": "Design Hashset",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -88,6 +97,7 @@
    "slug": "design-hashmap",
    "nc_slug": "design-hashmap",
    "title": "Design HashMap",
+   "nc_title": "Design HashMap",
    "difficulty": "Easy",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -97,6 +107,7 @@
    "slug": "sort-an-array",
    "nc_slug": "sort-an-array",
    "title": "Sort an Array",
+   "nc_title": "Sort an Array",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -106,6 +117,7 @@
    "slug": "sort-colors",
    "nc_slug": "sort-colors",
    "title": "Sort Colors",
+   "nc_title": "Sort Colors",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -115,6 +127,7 @@
    "slug": "top-k-frequent-elements",
    "nc_slug": "top-k-elements-in-list",
    "title": "Top K Frequent Elements",
+   "nc_title": "Top K Frequent Elements",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -124,6 +137,7 @@
    "slug": "encode-and-decode-strings",
    "nc_slug": "string-encode-and-decode",
    "title": "Encode and Decode Strings",
+   "nc_title": "Encode and Decode Strings",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -133,6 +147,7 @@
    "slug": "range-sum-query-2d-immutable",
    "nc_slug": "range-sum-query-2d-immutable",
    "title": "Range Sum Query 2D Immutable",
+   "nc_title": "Range Sum Query 2D Immutable",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -142,6 +157,7 @@
    "slug": "product-of-array-except-self",
    "nc_slug": "products-of-array-discluding-self",
    "title": "Product of Array Except Self",
+   "nc_title": "Products of Array Except Self",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -151,6 +167,7 @@
    "slug": "valid-sudoku",
    "nc_slug": "valid-sudoku",
    "title": "Valid Sudoku",
+   "nc_title": "Valid Sudoku",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -160,6 +177,7 @@
    "slug": "longest-consecutive-sequence",
    "nc_slug": "longest-consecutive-sequence",
    "title": "Longest Consecutive Sequence",
+   "nc_title": "Longest Consecutive Sequence",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": true
@@ -169,6 +187,7 @@
    "slug": "best-time-to-buy-and-sell-stock-ii",
    "nc_slug": "best-time-to-buy-and-sell-stock-ii",
    "title": "Best Time to Buy And Sell Stock II",
+   "nc_title": "Best Time to Buy and Sell Stock II",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -178,6 +197,7 @@
    "slug": "majority-element-ii",
    "nc_slug": "majority-element-ii",
    "title": "Majority Element II",
+   "nc_title": "Majority Element II",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -187,6 +207,7 @@
    "slug": "subarray-sum-equals-k",
    "nc_slug": "subarray-sum-equals-k",
    "title": "Subarray Sum Equals K",
+   "nc_title": "Subarray Sum Equals K",
    "difficulty": "Medium",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -196,6 +217,7 @@
    "slug": "first-missing-positive",
    "nc_slug": "first-missing-positive",
    "title": "First Missing Positive",
+   "nc_title": "First Missing Positive",
    "difficulty": "Hard",
    "topic": "01-arrays-hashing",
    "nc150": false
@@ -205,6 +227,7 @@
    "slug": "reverse-string",
    "nc_slug": "reverse-string",
    "title": "Reverse String",
+   "nc_title": "Reverse String",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": false
@@ -214,6 +237,7 @@
    "slug": "valid-palindrome",
    "nc_slug": "is-palindrome",
    "title": "Valid Palindrome",
+   "nc_title": "Valid Palindrome",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": true
@@ -223,6 +247,7 @@
    "slug": "valid-palindrome-ii",
    "nc_slug": "valid-palindrome-ii",
    "title": "Valid Palindrome II",
+   "nc_title": "Valid Palindrome II",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": false
@@ -232,6 +257,7 @@
    "slug": "merge-strings-alternately",
    "nc_slug": "merge-strings-alternately",
    "title": "Merge Strings Alternately",
+   "nc_title": "Merge Strings Alternately",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": false
@@ -241,6 +267,7 @@
    "slug": "merge-sorted-array",
    "nc_slug": "merge-sorted-array",
    "title": "Merge Sorted Array",
+   "nc_title": "Merge Sorted Array",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": false
@@ -250,6 +277,7 @@
    "slug": "remove-duplicates-from-sorted-array",
    "nc_slug": "remove-duplicates-from-sorted-array",
    "title": "Remove Duplicates From Sorted Array",
+   "nc_title": "Remove Duplicates From Sorted Array",
    "difficulty": "Easy",
    "topic": "02-two-pointers",
    "nc150": false
@@ -259,6 +287,7 @@
    "slug": "two-sum-ii-input-array-is-sorted",
    "nc_slug": "two-integer-sum-ii",
    "title": "Two Sum II Input Array Is Sorted",
+   "nc_title": "Two Integer Sum II",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": true
@@ -268,6 +297,7 @@
    "slug": "3sum",
    "nc_slug": "three-integer-sum",
    "title": "3Sum",
+   "nc_title": "3Sum",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": true
@@ -277,6 +307,7 @@
    "slug": "4sum",
    "nc_slug": "4sum",
    "title": "4Sum",
+   "nc_title": "4Sum",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": false
@@ -286,6 +317,7 @@
    "slug": "rotate-array",
    "nc_slug": "rotate-array",
    "title": "Rotate Array",
+   "nc_title": "Rotate Array",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": false
@@ -295,6 +327,7 @@
    "slug": "container-with-most-water",
    "nc_slug": "max-water-container",
    "title": "Container With Most Water",
+   "nc_title": "Container With Most Water",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": true
@@ -304,6 +337,7 @@
    "slug": "boats-to-save-people",
    "nc_slug": "boats-to-save-people",
    "title": "Boats to Save People",
+   "nc_title": "Boats to Save People",
    "difficulty": "Medium",
    "topic": "02-two-pointers",
    "nc150": false
@@ -313,6 +347,7 @@
    "slug": "trapping-rain-water",
    "nc_slug": "trapping-rain-water",
    "title": "Trapping Rain Water",
+   "nc_title": "Trapping Rain Water",
    "difficulty": "Hard",
    "topic": "02-two-pointers",
    "nc150": true
@@ -322,6 +357,7 @@
    "slug": "contains-duplicate-ii",
    "nc_slug": "contains-duplicate-ii",
    "title": "Contains Duplicate II",
+   "nc_title": "Contains Duplicate II",
    "difficulty": "Easy",
    "topic": "03-sliding-window",
    "nc150": false
@@ -331,6 +367,7 @@
    "slug": "best-time-to-buy-and-sell-stock",
    "nc_slug": "buy-and-sell-crypto",
    "title": "Best Time to Buy And Sell Stock",
+   "nc_title": "Best Time to Buy and Sell Stock",
    "difficulty": "Easy",
    "topic": "03-sliding-window",
    "nc150": true
@@ -340,6 +377,7 @@
    "slug": "longest-substring-without-repeating-characters",
    "nc_slug": "longest-substring-without-duplicates",
    "title": "Longest Substring Without Repeating Characters",
+   "nc_title": "Longest Substring Without Repeating Characters",
    "difficulty": "Medium",
    "topic": "03-sliding-window",
    "nc150": true
@@ -349,6 +387,7 @@
    "slug": "longest-repeating-character-replacement",
    "nc_slug": "longest-repeating-substring-with-replacement",
    "title": "Longest Repeating Character Replacement",
+   "nc_title": "Longest Repeating Character Replacement",
    "difficulty": "Medium",
    "topic": "03-sliding-window",
    "nc150": true
@@ -358,6 +397,7 @@
    "slug": "permutation-in-string",
    "nc_slug": "permutation-string",
    "title": "Permutation In String",
+   "nc_title": "Permutation in String",
    "difficulty": "Medium",
    "topic": "03-sliding-window",
    "nc150": true
@@ -367,6 +407,7 @@
    "slug": "minimum-size-subarray-sum",
    "nc_slug": "minimum-size-subarray-sum",
    "title": "Minimum Size Subarray Sum",
+   "nc_title": "Minimum Size Subarray Sum",
    "difficulty": "Medium",
    "topic": "03-sliding-window",
    "nc150": false
@@ -376,6 +417,7 @@
    "slug": "find-k-closest-elements",
    "nc_slug": "find-k-closest-elements",
    "title": "Find K Closest Elements",
+   "nc_title": "Find K Closest Elements",
    "difficulty": "Medium",
    "topic": "03-sliding-window",
    "nc150": false
@@ -385,6 +427,7 @@
    "slug": "minimum-window-substring",
    "nc_slug": "minimum-window-with-characters",
    "title": "Minimum Window Substring",
+   "nc_title": "Minimum Window Substring",
    "difficulty": "Hard",
    "topic": "03-sliding-window",
    "nc150": true
@@ -394,6 +437,7 @@
    "slug": "sliding-window-maximum",
    "nc_slug": "sliding-window-maximum",
    "title": "Sliding Window Maximum",
+   "nc_title": "Sliding Window Maximum",
    "difficulty": "Hard",
    "topic": "03-sliding-window",
    "nc150": true
@@ -403,6 +447,7 @@
    "slug": "baseball-game",
    "nc_slug": "baseball-game",
    "title": "Baseball Game",
+   "nc_title": "Baseball Game",
    "difficulty": "Easy",
    "topic": "04-stack",
    "nc150": false
@@ -412,6 +457,7 @@
    "slug": "valid-parentheses",
    "nc_slug": "validate-parentheses",
    "title": "Valid Parentheses",
+   "nc_title": "Valid Parentheses",
    "difficulty": "Easy",
    "topic": "04-stack",
    "nc150": true
@@ -421,6 +467,7 @@
    "slug": "implement-stack-using-queues",
    "nc_slug": "implement-stack-using-queues",
    "title": "Implement Stack Using Queues",
+   "nc_title": "Implement Stack Using Queues",
    "difficulty": "Easy",
    "topic": "04-stack",
    "nc150": false
@@ -430,6 +477,7 @@
    "slug": "implement-queue-using-stacks",
    "nc_slug": "implement-queue-using-stacks",
    "title": "Implement Queue using Stacks",
+   "nc_title": "Implement Queue using Stacks",
    "difficulty": "Easy",
    "topic": "04-stack",
    "nc150": false
@@ -439,6 +487,7 @@
    "slug": "min-stack",
    "nc_slug": "minimum-stack",
    "title": "Min Stack",
+   "nc_title": "Min Stack",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": true
@@ -448,6 +497,7 @@
    "slug": "evaluate-reverse-polish-notation",
    "nc_slug": "evaluate-reverse-polish-notation",
    "title": "Evaluate Reverse Polish Notation",
+   "nc_title": "Evaluate Reverse Polish Notation",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": true
@@ -457,6 +507,7 @@
    "slug": "asteroid-collision",
    "nc_slug": "asteroid-collision",
    "title": "Asteroid Collision",
+   "nc_title": "Asteroid Collision",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": false
@@ -466,6 +517,7 @@
    "slug": "daily-temperatures",
    "nc_slug": "daily-temperatures",
    "title": "Daily Temperatures",
+   "nc_title": "Daily Temperatures",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": true
@@ -475,6 +527,7 @@
    "slug": "online-stock-span",
    "nc_slug": "online-stock-span",
    "title": "Online Stock Span",
+   "nc_title": "Online Stock Span",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": false
@@ -484,6 +537,7 @@
    "slug": "car-fleet",
    "nc_slug": "car-fleet",
    "title": "Car Fleet",
+   "nc_title": "Car Fleet",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": true
@@ -493,6 +547,7 @@
    "slug": "simplify-path",
    "nc_slug": "simplify-path",
    "title": "Simplify Path",
+   "nc_title": "Simplify Path",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": false
@@ -502,6 +557,7 @@
    "slug": "decode-string",
    "nc_slug": "decode-string",
    "title": "Decode String",
+   "nc_title": "Decode String",
    "difficulty": "Medium",
    "topic": "04-stack",
    "nc150": false
@@ -511,6 +567,7 @@
    "slug": "maximum-frequency-stack",
    "nc_slug": "maximum-frequency-stack",
    "title": "Maximum Frequency Stack",
+   "nc_title": "Maximum Frequency Stack",
    "difficulty": "Hard",
    "topic": "04-stack",
    "nc150": false
@@ -520,6 +577,7 @@
    "slug": "largest-rectangle-in-histogram",
    "nc_slug": "largest-rectangle-in-histogram",
    "title": "Largest Rectangle In Histogram",
+   "nc_title": "Largest Rectangle In Histogram",
    "difficulty": "Hard",
    "topic": "04-stack",
    "nc150": true
@@ -529,6 +587,7 @@
    "slug": "binary-search",
    "nc_slug": "binary-search",
    "title": "Binary Search",
+   "nc_title": "Binary Search",
    "difficulty": "Easy",
    "topic": "05-binary-search",
    "nc150": true
@@ -538,6 +597,7 @@
    "slug": "search-insert-position",
    "nc_slug": "search-insert-position",
    "title": "Search Insert Position",
+   "nc_title": "Search Insert Position",
    "difficulty": "Easy",
    "topic": "05-binary-search",
    "nc150": false
@@ -547,6 +607,7 @@
    "slug": "guess-number-higher-or-lower",
    "nc_slug": "guess-number-higher-or-lower",
    "title": "Guess Number Higher Or Lower",
+   "nc_title": "Guess Number Higher Or Lower",
    "difficulty": "Easy",
    "topic": "05-binary-search",
    "nc150": false
@@ -556,6 +617,7 @@
    "slug": "sqrtx",
    "nc_slug": "sqrtx",
    "title": "Sqrt(x)",
+   "nc_title": "Sqrt(x)",
    "difficulty": "Easy",
    "topic": "05-binary-search",
    "nc150": false
@@ -565,6 +627,7 @@
    "slug": "search-a-2d-matrix",
    "nc_slug": "search-2d-matrix",
    "title": "Search a 2D Matrix",
+   "nc_title": "Search a 2D Matrix",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": true
@@ -574,6 +637,7 @@
    "slug": "koko-eating-bananas",
    "nc_slug": "eating-bananas",
    "title": "Koko Eating Bananas",
+   "nc_title": "Koko Eating Bananas",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": true
@@ -583,6 +647,7 @@
    "slug": "capacity-to-ship-packages-within-d-days",
    "nc_slug": "capacity-to-ship-packages-within-d-days",
    "title": "Capacity to Ship Packages Within D Days",
+   "nc_title": "Capacity to Ship Packages Within D Days",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": false
@@ -592,6 +657,7 @@
    "slug": "find-minimum-in-rotated-sorted-array",
    "nc_slug": "find-minimum-in-rotated-sorted-array",
    "title": "Find Minimum In Rotated Sorted Array",
+   "nc_title": "Find Minimum in Rotated Sorted Array",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": true
@@ -601,6 +667,7 @@
    "slug": "search-in-rotated-sorted-array",
    "nc_slug": "find-target-in-rotated-sorted-array",
    "title": "Search In Rotated Sorted Array",
+   "nc_title": "Search in Rotated Sorted Array",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": true
@@ -610,6 +677,7 @@
    "slug": "search-in-rotated-sorted-array-ii",
    "nc_slug": "search-in-rotated-sorted-array-ii",
    "title": "Search In Rotated Sorted Array II",
+   "nc_title": "Search in Rotated Sorted Array II",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": false
@@ -619,6 +687,7 @@
    "slug": "time-based-key-value-store",
    "nc_slug": "time-based-key-value-store",
    "title": "Time Based Key Value Store",
+   "nc_title": "Time Based Key-Value Store",
    "difficulty": "Medium",
    "topic": "05-binary-search",
    "nc150": true
@@ -628,6 +697,7 @@
    "slug": "split-array-largest-sum",
    "nc_slug": "split-array-largest-sum",
    "title": "Split Array Largest Sum",
+   "nc_title": "Split Array Largest Sum",
    "difficulty": "Hard",
    "topic": "05-binary-search",
    "nc150": false
@@ -637,6 +707,7 @@
    "slug": "median-of-two-sorted-arrays",
    "nc_slug": "median-of-two-sorted-arrays",
    "title": "Median of Two Sorted Arrays",
+   "nc_title": "Median of Two Sorted Arrays",
    "difficulty": "Hard",
    "topic": "05-binary-search",
    "nc150": true
@@ -646,6 +717,7 @@
    "slug": "find-in-mountain-array",
    "nc_slug": "find-in-mountain-array",
    "title": "Find in Mountain Array",
+   "nc_title": "Find in Mountain Array",
    "difficulty": "Hard",
    "topic": "05-binary-search",
    "nc150": false
@@ -655,6 +727,7 @@
    "slug": "reverse-linked-list",
    "nc_slug": "reverse-a-linked-list",
    "title": "Reverse Linked List",
+   "nc_title": "Reverse Linked List",
    "difficulty": "Easy",
    "topic": "06-linked-list",
    "nc150": true
@@ -664,6 +737,7 @@
    "slug": "merge-two-sorted-lists",
    "nc_slug": "merge-two-sorted-linked-lists",
    "title": "Merge Two Sorted Lists",
+   "nc_title": "Merge Two Sorted Linked Lists",
    "difficulty": "Easy",
    "topic": "06-linked-list",
    "nc150": true
@@ -673,6 +747,7 @@
    "slug": "linked-list-cycle",
    "nc_slug": "linked-list-cycle-detection",
    "title": "Linked List Cycle",
+   "nc_title": "Linked List Cycle Detection",
    "difficulty": "Easy",
    "topic": "06-linked-list",
    "nc150": true
@@ -682,6 +757,7 @@
    "slug": "reorder-list",
    "nc_slug": "reorder-linked-list",
    "title": "Reorder List",
+   "nc_title": "Reorder Linked List",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -691,6 +767,7 @@
    "slug": "remove-nth-node-from-end-of-list",
    "nc_slug": "remove-node-from-end-of-linked-list",
    "title": "Remove Nth Node From End of List",
+   "nc_title": "Remove Nth Node From End of List",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -700,6 +777,7 @@
    "slug": "copy-list-with-random-pointer",
    "nc_slug": "copy-linked-list-with-random-pointer",
    "title": "Copy List With Random Pointer",
+   "nc_title": "Copy Linked List with Random Pointer",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -709,6 +787,7 @@
    "slug": "add-two-numbers",
    "nc_slug": "add-two-numbers",
    "title": "Add Two Numbers",
+   "nc_title": "Add Two Numbers",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -718,6 +797,7 @@
    "slug": "find-the-duplicate-number",
    "nc_slug": "find-duplicate-integer",
    "title": "Find The Duplicate Number",
+   "nc_title": "Find the Duplicate Number",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -727,6 +807,7 @@
    "slug": "reverse-linked-list-ii",
    "nc_slug": "reverse-linked-list-ii",
    "title": "Reverse Linked List II",
+   "nc_title": "Reverse Linked List II",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": false
@@ -736,6 +817,7 @@
    "slug": "design-circular-queue",
    "nc_slug": "design-circular-queue",
    "title": "Design Circular Queue",
+   "nc_title": "Design Circular Queue",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": false
@@ -745,6 +827,7 @@
    "slug": "lru-cache",
    "nc_slug": "lru-cache",
    "title": "LRU Cache",
+   "nc_title": "LRU Cache",
    "difficulty": "Medium",
    "topic": "06-linked-list",
    "nc150": true
@@ -754,6 +837,7 @@
    "slug": "lfu-cache",
    "nc_slug": "lfu-cache",
    "title": "LFU Cache",
+   "nc_title": "LFU Cache",
    "difficulty": "Hard",
    "topic": "06-linked-list",
    "nc150": false
@@ -763,6 +847,7 @@
    "slug": "merge-k-sorted-lists",
    "nc_slug": "merge-k-sorted-linked-lists",
    "title": "Merge K Sorted Lists",
+   "nc_title": "Merge K Sorted Linked Lists",
    "difficulty": "Hard",
    "topic": "06-linked-list",
    "nc150": true
@@ -772,6 +857,7 @@
    "slug": "reverse-nodes-in-k-group",
    "nc_slug": "reverse-nodes-in-k-group",
    "title": "Reverse Nodes In K Group",
+   "nc_title": "Reverse Nodes in K-Group",
    "difficulty": "Hard",
    "topic": "06-linked-list",
    "nc150": true
@@ -781,6 +867,7 @@
    "slug": "binary-tree-inorder-traversal",
    "nc_slug": "binary-tree-inorder-traversal",
    "title": "Binary Tree Inorder Traversal",
+   "nc_title": "Binary Tree Inorder Traversal",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": false
@@ -790,6 +877,7 @@
    "slug": "binary-tree-preorder-traversal",
    "nc_slug": "binary-tree-preorder-traversal",
    "title": "Binary Tree Preorder Traversal",
+   "nc_title": "Binary Tree Preorder Traversal",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": false
@@ -799,6 +887,7 @@
    "slug": "binary-tree-postorder-traversal",
    "nc_slug": "binary-tree-postorder-traversal",
    "title": "Binary Tree Postorder Traversal",
+   "nc_title": "Binary Tree Postorder Traversal",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": false
@@ -808,6 +897,7 @@
    "slug": "invert-binary-tree",
    "nc_slug": "invert-a-binary-tree",
    "title": "Invert Binary Tree",
+   "nc_title": "Invert Binary Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -817,6 +907,7 @@
    "slug": "maximum-depth-of-binary-tree",
    "nc_slug": "depth-of-binary-tree",
    "title": "Maximum Depth of Binary Tree",
+   "nc_title": "Maximum Depth of Binary Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -826,6 +917,7 @@
    "slug": "diameter-of-binary-tree",
    "nc_slug": "binary-tree-diameter",
    "title": "Diameter of Binary Tree",
+   "nc_title": "Diameter of Binary Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -835,6 +927,7 @@
    "slug": "balanced-binary-tree",
    "nc_slug": "balanced-binary-tree",
    "title": "Balanced Binary Tree",
+   "nc_title": "Balanced Binary Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -844,6 +937,7 @@
    "slug": "same-tree",
    "nc_slug": "same-binary-tree",
    "title": "Same Tree",
+   "nc_title": "Same Binary Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -853,6 +947,7 @@
    "slug": "subtree-of-another-tree",
    "nc_slug": "subtree-of-a-binary-tree",
    "title": "Subtree of Another Tree",
+   "nc_title": "Subtree of Another Tree",
    "difficulty": "Easy",
    "topic": "07-trees",
    "nc150": true
@@ -862,6 +957,7 @@
    "slug": "lowest-common-ancestor-of-a-binary-search-tree",
    "nc_slug": "lowest-common-ancestor-in-binary-search-tree",
    "title": "Lowest Common Ancestor of a Binary Search Tree",
+   "nc_title": "Lowest Common Ancestor in Binary Search Tree",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -871,6 +967,7 @@
    "slug": "insert-into-a-binary-search-tree",
    "nc_slug": "insert-into-a-binary-search-tree",
    "title": "Insert into a Binary Search Tree",
+   "nc_title": "Insert into a Binary Search Tree",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": false
@@ -880,6 +977,7 @@
    "slug": "delete-node-in-a-bst",
    "nc_slug": "delete-node-in-a-bst",
    "title": "Delete Node in a BST",
+   "nc_title": "Delete Node in a BST",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": false
@@ -889,6 +987,7 @@
    "slug": "binary-tree-level-order-traversal",
    "nc_slug": "level-order-traversal-of-binary-tree",
    "title": "Binary Tree Level Order Traversal",
+   "nc_title": "Binary Tree Level Order Traversal",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -898,6 +997,7 @@
    "slug": "binary-tree-right-side-view",
    "nc_slug": "binary-tree-right-side-view",
    "title": "Binary Tree Right Side View",
+   "nc_title": "Binary Tree Right Side View",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -907,6 +1007,7 @@
    "slug": "construct-quad-tree",
    "nc_slug": "construct-quad-tree",
    "title": "Construct Quad Tree",
+   "nc_title": "Construct Quad Tree",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": false
@@ -916,6 +1017,7 @@
    "slug": "count-good-nodes-in-binary-tree",
    "nc_slug": "count-good-nodes-in-binary-tree",
    "title": "Count Good Nodes In Binary Tree",
+   "nc_title": "Count Good Nodes in Binary Tree",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -925,6 +1027,7 @@
    "slug": "validate-binary-search-tree",
    "nc_slug": "valid-binary-search-tree",
    "title": "Validate Binary Search Tree",
+   "nc_title": "Valid Binary Search Tree",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -934,6 +1037,7 @@
    "slug": "kth-smallest-element-in-a-bst",
    "nc_slug": "kth-smallest-integer-in-bst",
    "title": "Kth Smallest Element In a Bst",
+   "nc_title": "Kth Smallest Integer in BST",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -943,6 +1047,7 @@
    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
    "nc_slug": "binary-tree-from-preorder-and-inorder-traversal",
    "title": "Construct Binary Tree From Preorder And Inorder Traversal",
+   "nc_title": "Construct Binary Tree from Preorder and Inorder Traversal",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": true
@@ -952,6 +1057,7 @@
    "slug": "house-robber-iii",
    "nc_slug": "house-robber-iii",
    "title": "House Robber III",
+   "nc_title": "House Robber III",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": false
@@ -961,6 +1067,7 @@
    "slug": "delete-leaves-with-a-given-value",
    "nc_slug": "delete-leaves-with-a-given-value",
    "title": "Delete Leaves With a Given Value",
+   "nc_title": "Delete Leaves With a Given Value",
    "difficulty": "Medium",
    "topic": "07-trees",
    "nc150": false
@@ -970,6 +1077,7 @@
    "slug": "binary-tree-maximum-path-sum",
    "nc_slug": "binary-tree-maximum-path-sum",
    "title": "Binary Tree Maximum Path Sum",
+   "nc_title": "Binary Tree Maximum Path Sum",
    "difficulty": "Hard",
    "topic": "07-trees",
    "nc150": true
@@ -979,6 +1087,7 @@
    "slug": "serialize-and-deserialize-binary-tree",
    "nc_slug": "serialize-and-deserialize-binary-tree",
    "title": "Serialize And Deserialize Binary Tree",
+   "nc_title": "Serialize and Deserialize Binary Tree",
    "difficulty": "Hard",
    "topic": "07-trees",
    "nc150": true
@@ -988,6 +1097,7 @@
    "slug": "kth-largest-element-in-a-stream",
    "nc_slug": "kth-largest-integer-in-a-stream",
    "title": "Kth Largest Element In a Stream",
+   "nc_title": "Kth Largest Element in a Stream",
    "difficulty": "Easy",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -997,6 +1107,7 @@
    "slug": "last-stone-weight",
    "nc_slug": "last-stone-weight",
    "title": "Last Stone Weight",
+   "nc_title": "Last Stone Weight",
    "difficulty": "Easy",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1006,6 +1117,7 @@
    "slug": "k-closest-points-to-origin",
    "nc_slug": "k-closest-points-to-origin",
    "title": "K Closest Points to Origin",
+   "nc_title": "K Closest Points to Origin",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1015,6 +1127,7 @@
    "slug": "kth-largest-element-in-an-array",
    "nc_slug": "kth-largest-element-in-an-array",
    "title": "Kth Largest Element In An Array",
+   "nc_title": "Kth Largest Element in an Array",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1024,6 +1137,7 @@
    "slug": "task-scheduler",
    "nc_slug": "task-scheduling",
    "title": "Task Scheduler",
+   "nc_title": "Task Scheduler",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1033,6 +1147,7 @@
    "slug": "design-twitter",
    "nc_slug": "design-twitter-feed",
    "title": "Design Twitter",
+   "nc_title": "Design Twitter",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1042,6 +1157,7 @@
    "slug": "single-threaded-cpu",
    "nc_slug": "single-threaded-cpu",
    "title": "Single Threaded CPU",
+   "nc_title": "Single Threaded CPU",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": false
@@ -1051,6 +1167,7 @@
    "slug": "reorganize-string",
    "nc_slug": "reorganize-string",
    "title": "Reorganize String",
+   "nc_title": "Reorganize String",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": false
@@ -1060,6 +1177,7 @@
    "slug": "longest-happy-string",
    "nc_slug": "longest-happy-string",
    "title": "Longest Happy String",
+   "nc_title": "Longest Happy String",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": false
@@ -1069,6 +1187,7 @@
    "slug": "car-pooling",
    "nc_slug": "car-pooling",
    "title": "Car Pooling",
+   "nc_title": "Car Pooling",
    "difficulty": "Medium",
    "topic": "08-heap-priority-queue",
    "nc150": false
@@ -1078,6 +1197,7 @@
    "slug": "find-median-from-data-stream",
    "nc_slug": "find-median-in-a-data-stream",
    "title": "Find Median From Data Stream",
+   "nc_title": "Find Median From Data Stream",
    "difficulty": "Hard",
    "topic": "08-heap-priority-queue",
    "nc150": true
@@ -1087,6 +1207,7 @@
    "slug": "ipo",
    "nc_slug": "ipo",
    "title": "IPO",
+   "nc_title": "IPO",
    "difficulty": "Hard",
    "topic": "08-heap-priority-queue",
    "nc150": false
@@ -1096,6 +1217,7 @@
    "slug": "sum-of-all-subset-xor-totals",
    "nc_slug": "sum-of-all-subset-xor-totals",
    "title": "Sum of All Subsets XOR Total",
+   "nc_title": "Sum of All Subsets XOR Total",
    "difficulty": "Easy",
    "topic": "09-backtracking",
    "nc150": false
@@ -1105,6 +1227,7 @@
    "slug": "subsets",
    "nc_slug": "subsets",
    "title": "Subsets",
+   "nc_title": "Subsets",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1114,6 +1237,7 @@
    "slug": "combination-sum",
    "nc_slug": "combination-target-sum",
    "title": "Combination Sum",
+   "nc_title": "Combination Sum",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1123,6 +1247,7 @@
    "slug": "combination-sum-ii",
    "nc_slug": "combination-target-sum-ii",
    "title": "Combination Sum II",
+   "nc_title": "Combination Sum II",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1132,6 +1257,7 @@
    "slug": "combinations",
    "nc_slug": "combinations",
    "title": "Combinations",
+   "nc_title": "Combinations",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": false
@@ -1141,6 +1267,7 @@
    "slug": "permutations",
    "nc_slug": "permutations",
    "title": "Permutations",
+   "nc_title": "Permutations",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1150,6 +1277,7 @@
    "slug": "subsets-ii",
    "nc_slug": "subsets-ii",
    "title": "Subsets II",
+   "nc_title": "Subsets II",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1159,6 +1287,7 @@
    "slug": "permutations-ii",
    "nc_slug": "permutations-ii",
    "title": "Permutations II",
+   "nc_title": "Permutations II",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": false
@@ -1168,6 +1297,7 @@
    "slug": "generate-parentheses",
    "nc_slug": "generate-parentheses",
    "title": "Generate Parentheses",
+   "nc_title": "Generate Parentheses",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1177,6 +1307,7 @@
    "slug": "word-search",
    "nc_slug": "search-for-word",
    "title": "Word Search",
+   "nc_title": "Word Search",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1186,6 +1317,7 @@
    "slug": "palindrome-partitioning",
    "nc_slug": "palindrome-partitioning",
    "title": "Palindrome Partitioning",
+   "nc_title": "Palindrome Partitioning",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1195,6 +1327,7 @@
    "slug": "letter-combinations-of-a-phone-number",
    "nc_slug": "combinations-of-a-phone-number",
    "title": "Letter Combinations of a Phone Number",
+   "nc_title": "Letter Combinations of a Phone Number",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": true
@@ -1204,6 +1337,7 @@
    "slug": "matchsticks-to-square",
    "nc_slug": "matchsticks-to-square",
    "title": "Matchsticks to Square",
+   "nc_title": "Matchsticks to Square",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": false
@@ -1213,6 +1347,7 @@
    "slug": "partition-to-k-equal-sum-subsets",
    "nc_slug": "partition-to-k-equal-sum-subsets",
    "title": "Partition to K Equal Sum Subsets",
+   "nc_title": "Partition to K Equal Sum Subsets",
    "difficulty": "Medium",
    "topic": "09-backtracking",
    "nc150": false
@@ -1222,6 +1357,7 @@
    "slug": "n-queens",
    "nc_slug": "n-queens",
    "title": "N Queens",
+   "nc_title": "N-Queens",
    "difficulty": "Hard",
    "topic": "09-backtracking",
    "nc150": true
@@ -1231,6 +1367,7 @@
    "slug": "n-queens-ii",
    "nc_slug": "n-queens-ii",
    "title": "N Queens II",
+   "nc_title": "N-Queens II",
    "difficulty": "Hard",
    "topic": "09-backtracking",
    "nc150": false
@@ -1240,6 +1377,7 @@
    "slug": "word-break-ii",
    "nc_slug": "word-break-ii",
    "title": "Word Break II",
+   "nc_title": "Word Break II",
    "difficulty": "Hard",
    "topic": "09-backtracking",
    "nc150": false
@@ -1249,6 +1387,7 @@
    "slug": "implement-trie-prefix-tree",
    "nc_slug": "implement-prefix-tree",
    "title": "Implement Trie Prefix Tree",
+   "nc_title": "Implement Trie (Prefix Tree)",
    "difficulty": "Medium",
    "topic": "10-tries",
    "nc150": true
@@ -1258,6 +1397,7 @@
    "slug": "design-add-and-search-words-data-structure",
    "nc_slug": "design-word-search-data-structure",
    "title": "Design Add And Search Words Data Structure",
+   "nc_title": "Design Add and Search Word Data Structure",
    "difficulty": "Medium",
    "topic": "10-tries",
    "nc150": true
@@ -1267,6 +1407,7 @@
    "slug": "extra-characters-in-a-string",
    "nc_slug": "extra-characters-in-a-string",
    "title": "Extra Characters in a String",
+   "nc_title": "Extra Characters in a String",
    "difficulty": "Medium",
    "topic": "10-tries",
    "nc150": false
@@ -1276,6 +1417,7 @@
    "slug": "word-search-ii",
    "nc_slug": "search-for-word-ii",
    "title": "Word Search II",
+   "nc_title": "Word Search II",
    "difficulty": "Hard",
    "topic": "10-tries",
    "nc150": true
@@ -1285,6 +1427,7 @@
    "slug": "island-perimeter",
    "nc_slug": "island-perimeter",
    "title": "Island Perimeter",
+   "nc_title": "Island Perimeter",
    "difficulty": "Easy",
    "topic": "11-graphs",
    "nc150": false
@@ -1294,6 +1437,7 @@
    "slug": "verifying-an-alien-dictionary",
    "nc_slug": "verifying-an-alien-dictionary",
    "title": "Verifying An Alien Dictionary",
+   "nc_title": "Verifying An Alien Dictionary",
    "difficulty": "Easy",
    "topic": "11-graphs",
    "nc150": false
@@ -1303,6 +1447,7 @@
    "slug": "find-the-town-judge",
    "nc_slug": "find-the-town-judge",
    "title": "Find the Town Judge",
+   "nc_title": "Find the Town Judge",
    "difficulty": "Easy",
    "topic": "11-graphs",
    "nc150": false
@@ -1312,6 +1457,7 @@
    "slug": "number-of-islands",
    "nc_slug": "count-number-of-islands",
    "title": "Number of Islands",
+   "nc_title": "Number of Islands",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1321,6 +1467,7 @@
    "slug": "max-area-of-island",
    "nc_slug": "max-area-of-island",
    "title": "Max Area of Island",
+   "nc_title": "Max Area of Island",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1330,6 +1477,7 @@
    "slug": "clone-graph",
    "nc_slug": "clone-graph",
    "title": "Clone Graph",
+   "nc_title": "Clone Graph",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1339,6 +1487,7 @@
    "slug": "walls-and-gates",
    "nc_slug": "islands-and-treasure",
    "title": "Walls And Gates",
+   "nc_title": "Islands and Treasure",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1348,6 +1497,7 @@
    "slug": "rotting-oranges",
    "nc_slug": "rotting-fruit",
    "title": "Rotting Oranges",
+   "nc_title": "Rotting Fruit",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1357,6 +1507,7 @@
    "slug": "pacific-atlantic-water-flow",
    "nc_slug": "pacific-atlantic-water-flow",
    "title": "Pacific Atlantic Water Flow",
+   "nc_title": "Pacific Atlantic Water Flow",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1366,6 +1517,7 @@
    "slug": "surrounded-regions",
    "nc_slug": "surrounded-regions",
    "title": "Surrounded Regions",
+   "nc_title": "Surrounded Regions",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1375,6 +1527,7 @@
    "slug": "open-the-lock",
    "nc_slug": "open-the-lock",
    "title": "Open The Lock",
+   "nc_title": "Open The Lock",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": false
@@ -1384,6 +1537,7 @@
    "slug": "course-schedule",
    "nc_slug": "course-schedule",
    "title": "Course Schedule",
+   "nc_title": "Course Schedule",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1393,6 +1547,7 @@
    "slug": "course-schedule-ii",
    "nc_slug": "course-schedule-ii",
    "title": "Course Schedule II",
+   "nc_title": "Course Schedule II",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1402,6 +1557,7 @@
    "slug": "graph-valid-tree",
    "nc_slug": "valid-tree",
    "title": "Graph Valid Tree",
+   "nc_title": "Graph Valid Tree",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1411,6 +1567,7 @@
    "slug": "course-schedule-iv",
    "nc_slug": "course-schedule-iv",
    "title": "Course Schedule IV",
+   "nc_title": "Course Schedule IV",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": false
@@ -1420,6 +1577,7 @@
    "slug": "number-of-connected-components-in-an-undirected-graph",
    "nc_slug": "count-connected-components",
    "title": "Number of Connected Components In An Undirected Graph",
+   "nc_title": "Number of Connected Components in an Undirected Graph",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1429,6 +1587,7 @@
    "slug": "redundant-connection",
    "nc_slug": "redundant-connection",
    "title": "Redundant Connection",
+   "nc_title": "Redundant Connection",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": true
@@ -1438,6 +1597,7 @@
    "slug": "accounts-merge",
    "nc_slug": "accounts-merge",
    "title": "Accounts Merge",
+   "nc_title": "Accounts Merge",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": false
@@ -1447,6 +1607,7 @@
    "slug": "evaluate-division",
    "nc_slug": "evaluate-division",
    "title": "Evaluate Division",
+   "nc_title": "Evaluate Division",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": false
@@ -1456,6 +1617,7 @@
    "slug": "minimum-height-trees",
    "nc_slug": "minimum-height-trees",
    "title": "Minimum Height Trees",
+   "nc_title": "Minimum Height Trees",
    "difficulty": "Medium",
    "topic": "11-graphs",
    "nc150": false
@@ -1465,6 +1627,7 @@
    "slug": "word-ladder",
    "nc_slug": "word-ladder",
    "title": "Word Ladder",
+   "nc_title": "Word Ladder",
    "difficulty": "Hard",
    "topic": "11-graphs",
    "nc150": true
@@ -1474,6 +1637,7 @@
    "slug": "path-with-minimum-effort",
    "nc_slug": "path-with-minimum-effort",
    "title": "Path with Minimum Effort",
+   "nc_title": "Path with Minimum Effort",
    "difficulty": "Medium",
    "topic": "12-advanced-graphs",
    "nc150": false
@@ -1483,6 +1647,7 @@
    "slug": "network-delay-time",
    "nc_slug": "network-delay-time",
    "title": "Network Delay Time",
+   "nc_title": "Network Delay Time",
    "difficulty": "Medium",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1492,6 +1657,7 @@
    "slug": "reconstruct-itinerary",
    "nc_slug": "reconstruct-flight-path",
    "title": "Reconstruct Itinerary",
+   "nc_title": "Reconstruct Flight Path",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1501,6 +1667,7 @@
    "slug": "min-cost-to-connect-all-points",
    "nc_slug": "min-cost-to-connect-points",
    "title": "Min Cost to Connect All Points",
+   "nc_title": "Min Cost to Connect Points",
    "difficulty": "Medium",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1510,6 +1677,7 @@
    "slug": "swim-in-rising-water",
    "nc_slug": "swim-in-rising-water",
    "title": "Swim In Rising Water",
+   "nc_title": "Swim in Rising Water",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1519,6 +1687,7 @@
    "slug": "alien-dictionary",
    "nc_slug": "foreign-dictionary",
    "title": "Alien Dictionary",
+   "nc_title": "Alien Dictionary",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1528,6 +1697,7 @@
    "slug": "cheapest-flights-within-k-stops",
    "nc_slug": "cheapest-flight-path",
    "title": "Cheapest Flights Within K Stops",
+   "nc_title": "Cheapest Flights Within K Stops",
    "difficulty": "Medium",
    "topic": "12-advanced-graphs",
    "nc150": true
@@ -1537,6 +1707,7 @@
    "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
    "nc_slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
    "title": "Find Critical and Pseudo Critical Edges in Minimum Spanning Tree",
+   "nc_title": "Find Critical and Pseudo Critical Edges in Minimum Spanning Tree",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": false
@@ -1546,6 +1717,7 @@
    "slug": "build-a-matrix-with-conditions",
    "nc_slug": "build-a-matrix-with-conditions",
    "title": "Build a Matrix With Conditions",
+   "nc_title": "Build a Matrix With Conditions",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": false
@@ -1555,6 +1727,7 @@
    "slug": "greatest-common-divisor-traversal",
    "nc_slug": "greatest-common-divisor-traversal",
    "title": "Greatest Common Divisor Traversal",
+   "nc_title": "Greatest Common Divisor Traversal",
    "difficulty": "Hard",
    "topic": "12-advanced-graphs",
    "nc150": false
@@ -1564,6 +1737,7 @@
    "slug": "climbing-stairs",
    "nc_slug": "climbing-stairs",
    "title": "Climbing Stairs",
+   "nc_title": "Climbing Stairs",
    "difficulty": "Easy",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1573,6 +1747,7 @@
    "slug": "min-cost-climbing-stairs",
    "nc_slug": "min-cost-climbing-stairs",
    "title": "Min Cost Climbing Stairs",
+   "nc_title": "Min Cost Climbing Stairs",
    "difficulty": "Easy",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1582,6 +1757,7 @@
    "slug": "n-th-tribonacci-number",
    "nc_slug": "n-th-tribonacci-number",
    "title": "N-th Tribonacci Number",
+   "nc_title": "N-th Tribonacci Number",
    "difficulty": "Easy",
    "topic": "13-dp-1d",
    "nc150": false
@@ -1591,6 +1767,7 @@
    "slug": "house-robber",
    "nc_slug": "house-robber",
    "title": "House Robber",
+   "nc_title": "House Robber",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1600,6 +1777,7 @@
    "slug": "house-robber-ii",
    "nc_slug": "house-robber-ii",
    "title": "House Robber II",
+   "nc_title": "House Robber II",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1609,6 +1787,7 @@
    "slug": "longest-palindromic-substring",
    "nc_slug": "longest-palindromic-substring",
    "title": "Longest Palindromic Substring",
+   "nc_title": "Longest Palindromic Substring",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1618,6 +1797,7 @@
    "slug": "palindromic-substrings",
    "nc_slug": "palindromic-substrings",
    "title": "Palindromic Substrings",
+   "nc_title": "Palindromic Substrings",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1627,6 +1807,7 @@
    "slug": "decode-ways",
    "nc_slug": "decode-ways",
    "title": "Decode Ways",
+   "nc_title": "Decode Ways",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1636,6 +1817,7 @@
    "slug": "coin-change",
    "nc_slug": "coin-change",
    "title": "Coin Change",
+   "nc_title": "Coin Change",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1645,6 +1827,7 @@
    "slug": "maximum-product-subarray",
    "nc_slug": "maximum-product-subarray",
    "title": "Maximum Product Subarray",
+   "nc_title": "Maximum Product Subarray",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1654,6 +1837,7 @@
    "slug": "word-break",
    "nc_slug": "word-break",
    "title": "Word Break",
+   "nc_title": "Word Break",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1663,6 +1847,7 @@
    "slug": "longest-increasing-subsequence",
    "nc_slug": "longest-increasing-subsequence",
    "title": "Longest Increasing Subsequence",
+   "nc_title": "Longest Increasing Subsequence",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1672,6 +1857,7 @@
    "slug": "partition-equal-subset-sum",
    "nc_slug": "partition-equal-subset-sum",
    "title": "Partition Equal Subset Sum",
+   "nc_title": "Partition Equal Subset Sum",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": true
@@ -1681,6 +1867,7 @@
    "slug": "combination-sum-iv",
    "nc_slug": "combination-sum-iv",
    "title": "Combination Sum IV",
+   "nc_title": "Combination Sum IV",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": false
@@ -1690,6 +1877,7 @@
    "slug": "perfect-squares",
    "nc_slug": "perfect-squares",
    "title": "Perfect Squares",
+   "nc_title": "Perfect Squares",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": false
@@ -1699,6 +1887,7 @@
    "slug": "integer-break",
    "nc_slug": "integer-break",
    "title": "Integer Break",
+   "nc_title": "Integer Break",
    "difficulty": "Medium",
    "topic": "13-dp-1d",
    "nc150": false
@@ -1708,6 +1897,7 @@
    "slug": "stone-game-iii",
    "nc_slug": "stone-game-iii",
    "title": "Stone Game III",
+   "nc_title": "Stone Game III",
    "difficulty": "Hard",
    "topic": "13-dp-1d",
    "nc150": false
@@ -1717,6 +1907,7 @@
    "slug": "unique-paths",
    "nc_slug": "count-paths",
    "title": "Unique Paths",
+   "nc_title": "Unique Paths",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1726,6 +1917,7 @@
    "slug": "unique-paths-ii",
    "nc_slug": "unique-paths-ii",
    "title": "Unique Paths II",
+   "nc_title": "Unique Paths II",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": false
@@ -1735,6 +1927,7 @@
    "slug": "minimum-path-sum",
    "nc_slug": "minimum-path-sum",
    "title": "Minimum Path Sum",
+   "nc_title": "Minimum Path Sum",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": false
@@ -1744,6 +1937,7 @@
    "slug": "longest-common-subsequence",
    "nc_slug": "longest-common-subsequence",
    "title": "Longest Common Subsequence",
+   "nc_title": "Longest Common Subsequence",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1753,6 +1947,7 @@
    "slug": "last-stone-weight-ii",
    "nc_slug": "last-stone-weight-ii",
    "title": "Last Stone Weight II",
+   "nc_title": "Last Stone Weight II",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": false
@@ -1762,6 +1957,7 @@
    "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
    "nc_slug": "buy-and-sell-crypto-with-cooldown",
    "title": "Best Time to Buy And Sell Stock With Cooldown",
+   "nc_title": "Best Time to Buy and Sell Stock with Cooldown",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1771,6 +1967,7 @@
    "slug": "coin-change-ii",
    "nc_slug": "coin-change-ii",
    "title": "Coin Change II",
+   "nc_title": "Coin Change II",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1780,6 +1977,7 @@
    "slug": "target-sum",
    "nc_slug": "target-sum",
    "title": "Target Sum",
+   "nc_title": "Target Sum",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1789,6 +1987,7 @@
    "slug": "interleaving-string",
    "nc_slug": "interleaving-string",
    "title": "Interleaving String",
+   "nc_title": "Interleaving String",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1798,6 +1997,7 @@
    "slug": "stone-game",
    "nc_slug": "stone-game",
    "title": "Stone Game",
+   "nc_title": "Stone Game",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": false
@@ -1807,6 +2007,7 @@
    "slug": "stone-game-ii",
    "nc_slug": "stone-game-ii",
    "title": "Stone Game II",
+   "nc_title": "Stone Game II",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": false
@@ -1816,6 +2017,7 @@
    "slug": "longest-increasing-path-in-a-matrix",
    "nc_slug": "longest-increasing-path-in-matrix",
    "title": "Longest Increasing Path In a Matrix",
+   "nc_title": "Longest Increasing Path in Matrix",
    "difficulty": "Hard",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1825,6 +2027,7 @@
    "slug": "distinct-subsequences",
    "nc_slug": "count-subsequences",
    "title": "Distinct Subsequences",
+   "nc_title": "Distinct Subsequences",
    "difficulty": "Hard",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1834,6 +2037,7 @@
    "slug": "edit-distance",
    "nc_slug": "edit-distance",
    "title": "Edit Distance",
+   "nc_title": "Edit Distance",
    "difficulty": "Medium",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1843,6 +2047,7 @@
    "slug": "burst-balloons",
    "nc_slug": "burst-balloons",
    "title": "Burst Balloons",
+   "nc_title": "Burst Balloons",
    "difficulty": "Hard",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1852,6 +2057,7 @@
    "slug": "regular-expression-matching",
    "nc_slug": "regular-expression-matching",
    "title": "Regular Expression Matching",
+   "nc_title": "Regular Expression Matching",
    "difficulty": "Hard",
    "topic": "14-dp-2d",
    "nc150": true
@@ -1861,6 +2067,7 @@
    "slug": "lemonade-change",
    "nc_slug": "lemonade-change",
    "title": "Lemonade Change",
+   "nc_title": "Lemonade Change",
    "difficulty": "Easy",
    "topic": "15-greedy",
    "nc150": false
@@ -1870,6 +2077,7 @@
    "slug": "maximum-subarray",
    "nc_slug": "maximum-subarray",
    "title": "Maximum Subarray",
+   "nc_title": "Maximum Subarray",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1879,6 +2087,7 @@
    "slug": "maximum-sum-circular-subarray",
    "nc_slug": "maximum-sum-circular-subarray",
    "title": "Maximum Sum Circular Subarray",
+   "nc_title": "Maximum Sum Circular Subarray",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": false
@@ -1888,6 +2097,7 @@
    "slug": "longest-turbulent-subarray",
    "nc_slug": "longest-turbulent-subarray",
    "title": "Longest Turbulent Subarray",
+   "nc_title": "Longest Turbulent Subarray",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": false
@@ -1897,6 +2107,7 @@
    "slug": "jump-game",
    "nc_slug": "jump-game",
    "title": "Jump Game",
+   "nc_title": "Jump Game",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1906,6 +2117,7 @@
    "slug": "jump-game-ii",
    "nc_slug": "jump-game-ii",
    "title": "Jump Game II",
+   "nc_title": "Jump Game II",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1915,6 +2127,7 @@
    "slug": "jump-game-vii",
    "nc_slug": "jump-game-vii",
    "title": "Jump Game VII",
+   "nc_title": "Jump Game VII",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": false
@@ -1924,6 +2137,7 @@
    "slug": "gas-station",
    "nc_slug": "gas-station",
    "title": "Gas Station",
+   "nc_title": "Gas Station",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1933,6 +2147,7 @@
    "slug": "hand-of-straights",
    "nc_slug": "hand-of-straights",
    "title": "Hand of Straights",
+   "nc_title": "Hand of Straights",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1942,6 +2157,7 @@
    "slug": "dota2-senate",
    "nc_slug": "dota2-senate",
    "title": "Dota2 Senate",
+   "nc_title": "Dota2 Senate",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": false
@@ -1951,6 +2167,7 @@
    "slug": "merge-triplets-to-form-target-triplet",
    "nc_slug": "merge-triplets-to-form-target",
    "title": "Merge Triplets to Form Target Triplet",
+   "nc_title": "Merge Triplets to Form Target",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1960,6 +2177,7 @@
    "slug": "partition-labels",
    "nc_slug": "partition-labels",
    "title": "Partition Labels",
+   "nc_title": "Partition Labels",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1969,6 +2187,7 @@
    "slug": "valid-parenthesis-string",
    "nc_slug": "valid-parenthesis-string",
    "title": "Valid Parenthesis String",
+   "nc_title": "Valid Parenthesis String",
    "difficulty": "Medium",
    "topic": "15-greedy",
    "nc150": true
@@ -1978,6 +2197,7 @@
    "slug": "candy",
    "nc_slug": "candy",
    "title": "Candy",
+   "nc_title": "Candy",
    "difficulty": "Hard",
    "topic": "15-greedy",
    "nc150": false
@@ -1987,6 +2207,7 @@
    "slug": "insert-interval",
    "nc_slug": "insert-new-interval",
    "title": "Insert Interval",
+   "nc_title": "Insert Interval",
    "difficulty": "Medium",
    "topic": "16-intervals",
    "nc150": true
@@ -1996,6 +2217,7 @@
    "slug": "merge-intervals",
    "nc_slug": "merge-intervals",
    "title": "Merge Intervals",
+   "nc_title": "Merge Intervals",
    "difficulty": "Medium",
    "topic": "16-intervals",
    "nc150": true
@@ -2005,6 +2227,7 @@
    "slug": "non-overlapping-intervals",
    "nc_slug": "non-overlapping-intervals",
    "title": "Non Overlapping Intervals",
+   "nc_title": "Non-overlapping Intervals",
    "difficulty": "Medium",
    "topic": "16-intervals",
    "nc150": true
@@ -2014,6 +2237,7 @@
    "slug": "meeting-rooms",
    "nc_slug": "meeting-schedule",
    "title": "Meeting Rooms",
+   "nc_title": "Meeting Rooms",
    "difficulty": "Easy",
    "topic": "16-intervals",
    "nc150": true
@@ -2023,6 +2247,7 @@
    "slug": "meeting-rooms-ii",
    "nc_slug": "meeting-schedule-ii",
    "title": "Meeting Rooms II",
+   "nc_title": "Meeting Rooms II",
    "difficulty": "Medium",
    "topic": "16-intervals",
    "nc150": true
@@ -2032,6 +2257,7 @@
    "slug": "meeting-rooms-iii",
    "nc_slug": "meeting-rooms-iii",
    "title": "Meeting Rooms III",
+   "nc_title": "Meeting Rooms III",
    "difficulty": "Hard",
    "topic": "16-intervals",
    "nc150": false
@@ -2041,6 +2267,7 @@
    "slug": "minimum-interval-to-include-each-query",
    "nc_slug": "minimum-interval-including-query",
    "title": "Minimum Interval to Include Each Query",
+   "nc_title": "Minimum Interval to Include Each Query",
    "difficulty": "Hard",
    "topic": "16-intervals",
    "nc150": true
@@ -2050,6 +2277,7 @@
    "slug": "excel-sheet-column-title",
    "nc_slug": "excel-sheet-column-title",
    "title": "Excel Sheet Column Title",
+   "nc_title": "Excel Sheet Column Title",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": false
@@ -2059,6 +2287,7 @@
    "slug": "greatest-common-divisor-of-strings",
    "nc_slug": "greatest-common-divisor-of-strings",
    "title": "Greatest Common Divisor of Strings",
+   "nc_title": "Greatest Common Divisor of Strings",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": false
@@ -2068,6 +2297,7 @@
    "slug": "insert-greatest-common-divisors-in-linked-list",
    "nc_slug": "insert-greatest-common-divisors-in-linked-list",
    "title": "Insert Greatest Common Divisors in Linked List",
+   "nc_title": "Insert Greatest Common Divisors in Linked List",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": false
@@ -2077,6 +2307,7 @@
    "slug": "transpose-matrix",
    "nc_slug": "transpose-matrix",
    "title": "Transpose Matrix",
+   "nc_title": "Transpose Matrix",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": false
@@ -2086,6 +2317,7 @@
    "slug": "rotate-image",
    "nc_slug": "rotate-matrix",
    "title": "Rotate Image",
+   "nc_title": "Rotate Image",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2095,6 +2327,7 @@
    "slug": "spiral-matrix",
    "nc_slug": "spiral-matrix",
    "title": "Spiral Matrix",
+   "nc_title": "Spiral Matrix",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2104,6 +2337,7 @@
    "slug": "set-matrix-zeroes",
    "nc_slug": "set-zeroes-in-matrix",
    "title": "Set Matrix Zeroes",
+   "nc_title": "Set Matrix Zeroes",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2113,6 +2347,7 @@
    "slug": "happy-number",
    "nc_slug": "non-cyclical-number",
    "title": "Happy Number",
+   "nc_title": "Non-Cyclical Number",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2122,6 +2357,7 @@
    "slug": "plus-one",
    "nc_slug": "plus-one",
    "title": "Plus One",
+   "nc_title": "Plus One",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2131,6 +2367,7 @@
    "slug": "roman-to-integer",
    "nc_slug": "roman-to-integer",
    "title": "Roman to Integer",
+   "nc_title": "Roman to Integer",
    "difficulty": "Easy",
    "topic": "17-math-geometry",
    "nc150": false
@@ -2140,6 +2377,7 @@
    "slug": "powx-n",
    "nc_slug": "pow-x-n",
    "title": "Pow(x, n)",
+   "nc_title": "Pow(x, n)",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2149,6 +2387,7 @@
    "slug": "multiply-strings",
    "nc_slug": "multiply-strings",
    "title": "Multiply Strings",
+   "nc_title": "Multiply Strings",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2158,6 +2397,7 @@
    "slug": "detect-squares",
    "nc_slug": "count-squares",
    "title": "Detect Squares",
+   "nc_title": "Detect Squares",
    "difficulty": "Medium",
    "topic": "17-math-geometry",
    "nc150": true
@@ -2167,6 +2407,7 @@
    "slug": "single-number",
    "nc_slug": "single-number",
    "title": "Single Number",
+   "nc_title": "Single Number",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2176,6 +2417,7 @@
    "slug": "number-of-1-bits",
    "nc_slug": "number-of-one-bits",
    "title": "Number of 1 Bits",
+   "nc_title": "Number of 1 Bits",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2185,6 +2427,7 @@
    "slug": "counting-bits",
    "nc_slug": "counting-bits",
    "title": "Counting Bits",
+   "nc_title": "Counting Bits",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2194,6 +2437,7 @@
    "slug": "add-binary",
    "nc_slug": "add-binary",
    "title": "Add Binary",
+   "nc_title": "Add Binary",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": false
@@ -2203,6 +2447,7 @@
    "slug": "reverse-bits",
    "nc_slug": "reverse-bits",
    "title": "Reverse Bits",
+   "nc_title": "Reverse Bits",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2212,6 +2457,7 @@
    "slug": "missing-number",
    "nc_slug": "missing-number",
    "title": "Missing Number",
+   "nc_title": "Missing Number",
    "difficulty": "Easy",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2221,6 +2467,7 @@
    "slug": "sum-of-two-integers",
    "nc_slug": "sum-of-two-integers",
    "title": "Sum of Two Integers",
+   "nc_title": "Sum of Two Integers",
    "difficulty": "Medium",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2230,6 +2477,7 @@
    "slug": "reverse-integer",
    "nc_slug": "reverse-integer",
    "title": "Reverse Integer",
+   "nc_title": "Reverse Integer",
    "difficulty": "Medium",
    "topic": "18-bit-manipulation",
    "nc150": true
@@ -2239,6 +2487,7 @@
    "slug": "bitwise-and-of-numbers-range",
    "nc_slug": "bitwise-and-of-numbers-range",
    "title": "Bitwise AND of Numbers Range",
+   "nc_title": "Bitwise AND of Numbers Range",
    "difficulty": "Medium",
    "topic": "18-bit-manipulation",
    "nc150": false
@@ -2248,6 +2497,7 @@
    "slug": "minimum-array-end",
    "nc_slug": "minimum-array-end",
    "title": "Minimum Array End",
+   "nc_title": "Minimum Array End",
    "difficulty": "Medium",
    "topic": "18-bit-manipulation",
    "nc150": false

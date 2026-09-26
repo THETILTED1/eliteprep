@@ -6,9 +6,9 @@ Two caches, both written by running this file with no arguments:
   tools/neetcode.json  the NeetCode 250 (which contains the 150), with topics
   tools/leetcode.json  every LeetCode problem, for supplementary practice
 
-neetcode.io is a single-page app with no API — every URL returns the same HTML
-shell — but its main bundle ships the whole problem table inline, carrying both
-slugs, the roadmap topic and the difficulty:
+neetcode.io is a single-page app — every URL returns the same HTML shell — but
+its main bundle ships the whole problem table inline, carrying both slugs, the
+roadmap topic and the difficulty:
 
     {problem:"Contains Duplicate", pattern:"Arrays & Hashing",
      link:"contains-duplicate/", ncLink:"duplicate-integer/",
@@ -17,6 +17,14 @@ slugs, the roadmap topic and the difficulty:
 `link` is the LeetCode slug, `ncLink` is NeetCode's renamed one, and `code` is
 already the `NNNN-leetcode-slug` handle this repo names files with. The 250 and
 the 150 share the same 18 topics, so anything in either infers a topic.
+
+`problem` is the title the roadmap lists. The problem's own page heads itself
+with another, which the bundle does not carry: the page asks a Firebase
+function for it as it loads, keyed by `ncLink`, and refresh asks the same
+function once per problem. The two disagree on 19 of the 250 — the page's
+`Longest Increasing Path in Matrix` against the roadmap's `Longest Increasing
+Path In a Matrix`, `Rotting Fruit` against `Rotting Oranges` — and both are
+titles someone will paste.
 
     python3 tools/manifest.py            # refresh both caches, then verify
     python3 tools/manifest.py <query>    # resolve one string
@@ -30,6 +38,7 @@ import json
 import re
 import sys
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from pathlib import Path
 
@@ -47,6 +56,11 @@ LEETCODE = HERE / "leetcode.json"
 UA = {"User-Agent": "Mozilla/5.0"}
 LC_LIST = "https://leetcode.com/api/problems/all/"
 LEVEL = {1: "Easy", 2: "Medium", 3: "Hard"}
+
+# The function a neetcode.io problem page calls for its heading. The project id
+# is read from the same bundle as the table; the region is Firebase's default.
+NC_TITLE_FN = "https://us-central1-{}.cloudfunctions.net/getProblemMetadataFunctionHttp"
+FIREBASE_PROJECT = re.compile(r'projectId:"([\w-]+)"')
 
 # NeetCode's pattern names are display strings; these are the directory slugs.
 # The 01-18 prefix is not hardcoded — it comes from the order patterns first
@@ -144,12 +158,46 @@ def scrape_neetcode(js: str) -> list[dict]:
                 "slug": slug,
                 "nc_slug": r["ncLink"].strip("/") if r.get("ncLink") else "",
                 "title": r["problem"],
+                "nc_title": "",  # filled in by fetch_nc_titles
                 "difficulty": r["difficulty"],
                 "topic": f"{order[r['pattern']]:02d}-{TOPIC_SLUG[r['pattern']]}",
                 "nc150": bool(r.get("neetcode150")),
             }
         )
     return out
+
+
+def fetch_nc_titles(js: str, nc: list[dict]) -> int:
+    """Fill in `nc_title`, the heading each problem's own page shows.
+
+    One unauthenticated request per problem, eight at a time — in series the
+    250 take over a minute, and a refresh can run in the middle of an insert.
+    The endpoint is undocumented, so losing it should cost a spelling rather
+    than the refresh: a problem it cannot reach keeps an empty `nc_title`,
+    still resolves by its roadmap title, and is counted in the return value.
+    """
+    m = FIREBASE_PROJECT.search(js)
+    if not m:
+        return sum(1 for p in nc if p["nc_slug"])
+    url = NC_TITLE_FN.format(m.group(1))
+
+    def title(nc_slug: str) -> str:
+        if not nc_slug:
+            return ""
+        body = json.dumps({"data": {"problemId": nc_slug}}).encode()
+        req = urllib.request.Request(
+            url, data=body, headers={**UA, "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.load(r)["data"]["name"]
+        except Exception:
+            return ""
+
+    with ThreadPoolExecutor(8) as pool:
+        for p, t in zip(nc, pool.map(title, [p["nc_slug"] for p in nc])):
+            p["nc_title"] = t
+    return sum(1 for p in nc if p["nc_slug"] and not p["nc_title"])
 
 
 def scrape_leetcode(payload: str) -> list[dict]:
@@ -170,7 +218,9 @@ def refresh() -> None:
         sys.exit("could not find main.*.js in the neetcode.io shell")
     url = f"https://neetcode.io/{m.group(1)}"
 
-    nc = scrape_neetcode(get(url))
+    js = get(url)
+    nc = scrape_neetcode(js)
+    missing = fetch_nc_titles(js, nc)
     NEETCODE.write_text(
         json.dumps({"generated": date.today().isoformat(), "source": url,
                     "problems": nc}, indent=1) + "\n",
@@ -178,6 +228,9 @@ def refresh() -> None:
     )
     n150 = sum(1 for p in nc if p["nc150"])
     print(f"wrote {NEETCODE.relative_to(ROOT)} ({len(nc)} problems, {n150} in the 150)")
+    if missing:
+        print(f"  ! {missing} NeetCode page titles could not be fetched; those "
+              "problems resolve by their roadmap title only", file=sys.stderr)
 
     lc = scrape_leetcode(get(LC_LIST))
     LEETCODE.write_text(
@@ -195,6 +248,16 @@ def refresh() -> None:
         print(f"  ! {p['slug']}: manifest {p['id']}, leetcode "
               f"{by_slug.get(p['slug'], {}).get('id')}", file=sys.stderr)
     print(f"{len(nc) - len(bad)}/{len(nc)} ids cross-check against LeetCode")
+
+    # A page title is NeetCode's own word for a problem. Were it some other
+    # problem's title too, the query would be ambiguous; _keys() lets the other
+    # problem keep it, and this says so rather than letting it pass unseen.
+    owner = {normalize(p["title"]): p["id"] for p in lc + nc}
+    for p in nc:
+        other = owner.get(normalize(p["nc_title"]), p["id"]) if p["nc_title"] else p["id"]
+        if other != p["id"]:
+            print(f"  ! NeetCode's page title {p['nc_title']!r} for {p['id']} is "
+                  f"also the title of {other}; it resolves to {other}", file=sys.stderr)
 
 
 # --------------------------------------------------------------------------
@@ -223,21 +286,32 @@ def _keys() -> dict[str, dict]:
     4046-entry LeetCode catalogue each time costs ~50 ms a call.
     """
     keys: dict[str, dict] = {}
-    # One key per problem per site: its displayed title, run through the same
-    # transform a query gets. Nothing else is indexed — no ids, no handles — so
-    # anything that resolves does so by surviving that transform, not by having
-    # been special-cased into working.
-    for p in load_neetcode():
-        keys[normalize(p["title"])] = {**p, "in_neetcode": True}
-    for p in load_leetcode():  # NeetCode entries win — they carry a topic
-        keys.setdefault(normalize(p["title"]), {**p, "in_neetcode": False, "topic": None})
+    # One key per displayed title, run through the same transform a query gets:
+    # LeetCode shows one, NeetCode two — the roadmap entry and the problem
+    # page's heading. Nothing else is indexed — no ids, no handles — so anything
+    # that resolves does so by surviving that transform, not by having been
+    # special-cased into working.
+    #
+    # Every title of a problem in the 250 lands on its NeetCode entry, since
+    # that is the one carrying a topic. Page titles go in last, so one can
+    # never take a title away from the problem LeetCode gives it to.
+    nc = {p["id"]: {**p, "in_neetcode": True} for p in load_neetcode()}
+    for p in nc.values():
+        keys[normalize(p["title"])] = p
+    for p in load_leetcode():
+        keys.setdefault(normalize(p["title"]),
+                        nc.get(p["id"]) or {**p, "in_neetcode": False, "topic": None})
+    for p in nc.values():
+        if p.get("nc_title"):  # absent from a cache written before it existed
+            keys.setdefault(normalize(p["nc_title"]), p)
     return keys
 
 
 def resolve(query: str, sync: bool = False) -> dict:
     """One string in, one problem out. Raises Unresolved rather than guessing.
 
-    The input is the problem's title as displayed on either site. Case,
+    The input is the problem's title as displayed on either site — LeetCode's,
+    NeetCode's roadmap entry, or the heading of NeetCode's problem page. Case,
     spacing, hyphens and punctuation are discarded first, so a slugified title
     (`contains-duplicate`) resolves as well as the pasted one — not because it
     is accepted as a second format, but because it survives the same transform
@@ -245,7 +319,9 @@ def resolve(query: str, sync: bool = False) -> dict:
 
     Nothing is indexed but titles. A bare id, a `NNNN-slug` handle or a URL do
     not resolve; NeetCode's renamed slug does not either, since it is a
-    different word rather than a differently punctuated one.
+    different word rather than a differently punctuated one — `duplicate-integer`
+    heads a page titled Contains Duplicate. Where the slug is only its page
+    title slugified, as `two-integer-sum-ii` is, it resolves as that title.
 
     A problem in the NeetCode 250 carries a topic; anything else has topic
     None. Both sites change — LeetCode adds problems every week, NeetCode

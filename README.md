@@ -451,21 +451,31 @@ is a title with different punctuation, and none is special-cased into working.
 A URL fails too, with a message telling you to use the title instead; that is a
 diagnostic, not a resolution path.
 
-Both sites' displayed titles are indexed, since both are front-facing spellings
-rather than alternate encodings. That covers the single problem in the 250
-where the two disagree: NeetCode's *Sum of All Subsets XOR Total* against
-LeetCode's *Sum of All Subset XOR Totals*.
+Every displayed title is indexed, since each is a front-facing spelling rather
+than an alternate encoding. LeetCode displays one per problem. NeetCode
+displays two — the roadmap entry and the heading of the problem's own page —
+and they are not the same. The roadmap disagrees with LeetCode once in the
+250, *Sum of All Subsets XOR Total* against *Sum of All Subset XOR Totals*; the
+page heading disagrees 19 times. Some drop a word (*Longest Increasing Path in
+Matrix*), some rename the problem outright (*Rotting Fruit* for Rotting
+Oranges, *Non-Cyclical Number* for Happy Number). All of them land on the same
+problem, topic included.
 
 ### Where the data comes from
 
-neetcode.io is a single-page app with no API — every URL returns the same HTML
-shell — but its main bundle ships the whole problem table inline, including
-both slugs, the roadmap topic and the difficulty. `tools/manifest.py` scrapes
-it, resolving the hashed bundle name from the shell each run so it survives
+neetcode.io is a single-page app — every URL returns the same HTML shell — but
+its main bundle ships the whole problem table inline, including both slugs, the
+roadmap title and topic, and the difficulty. `tools/manifest.py` scrapes it,
+resolving the hashed bundle name from the shell each run so it survives
 redeploys, and caches the NeetCode 250 (the 150 is a subset, and both share the
-same 18 topics). LeetCode's `api/problems/all/` supplies the full catalogue for
-supplementary problems. Neither needs authentication, and every scraped id is
-cross-checked against LeetCode's own list on refresh.
+same 18 topics). The problem page's heading is not in the bundle: the page
+fetches it from a Firebase function as it loads, and a refresh asks that
+function once per problem, eight at a time. It is undocumented, so if it stops
+answering the refresh warns and carries on, and those problems resolve by their
+roadmap title alone. LeetCode's `api/problems/all/` supplies the full catalogue
+for supplementary problems. None of it needs authentication. Every scraped id
+is cross-checked against LeetCode's own list on refresh, and every page title
+against the titles of other problems.
 
 Neither site is static: LeetCode adds problems continuously, and NeetCode
 revises its lists and redeploys under a new bundle hash. So the bundle name is
