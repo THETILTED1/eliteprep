@@ -379,11 +379,6 @@ class Attempt:
         return f"contests/{self.link}"
 
     @property
-    def upsolved(self) -> bool:
-        return bool(self.verdict and not self.verdict.error
-                    and not self.verdict.passed and self.solution)
-
-    @property
     def owed(self) -> bool:
         return bool(self.verdict and not self.verdict.error
                     and not self.verdict.passed and not self.solution)
@@ -404,7 +399,7 @@ class Attempt:
             return "?"
         if v.passed:
             return "✓" + (f" ({v.wrong})" if v.wrong else "")
-        return "↻" if self.solution else "✗"
+        return "✗"  # every miss is upsolved, so that needs no mark of its own
 
     @property
     def cell(self) -> str:
@@ -908,10 +903,9 @@ def emit_contests(attempts: list[Attempt]) -> str:
                     f"{plural(len(in_window), 'problem')} solved in the window")
     if misc:
         bits.append(f"**{plural(len(misc), 'standalone problem')}**")
-    bits.append(f"{sum(a.upsolved for a in attempts)} upsolved")
     out += [" · ".join(bits), "", nav(CONTESTS), "",
             "✓ solved · `(2)` after that many wrong submissions · ✗ missed · "
-            "↻ missed, and upsolved since · ⭐ starred", ""]
+            "⭐ starred", ""]
 
     if by_contest:
         width = max([4] + [a.q for a in in_window if a.q])
@@ -938,9 +932,9 @@ def emit_contests(attempts: list[Attempt]) -> str:
         out.append("")
     if owed:
         out += [f"## Upsolve <sub>{len(owed)}</sub>", "",
-                "Missed, and not solved since. Writing the solution into the file is "
-                "the upsolve: its ✗ turns to ↻ and it leaves this list, while the "
-                "verdict goes on saying what happened on the day.", ""]
+                "Missed, and not written up yet. Putting the solution in the file "
+                "is the upsolve, and takes it off this list; its ✗ stays, since that "
+                "is what happened on the day.", ""]
         out += ["| Where | Problem | Diff |", "|---|---|---|"]
         out += [f"| {a.where} | {a.name} | {a.difficulty} |"
                 for a in by_log(owed, order)] + [""]
@@ -984,7 +978,7 @@ def emit_contest_star(attempts: list[Attempt]) -> str:
 
 
 def emit_contest_solutions(attempts: list[Attempt]) -> str:
-    """Every solution written — passed, or upsolved since — easiest first.
+    """Every solution written — passed, or upsolved after a miss — easiest first.
 
     One per problem, so this is not the comparison neetcode/SOLUTIONS.md is: it
     is the approaches themselves, the way to find how a problem was done

@@ -88,9 +88,10 @@ rather than in ISSUES.md. Once there is code, all of it is owed.
 ## CONTESTS.md
 
 One row per contest, newest first, with a cell per question — `✓` solved in the
-window, `✓ (2)` after two wrong answers, `✗` missed, `↻` missed and upsolved
-since — and how many fell inside the 90 minutes. Below the table: the problems
-in `misc/`, and the upsolve list.
+window, `✓ (2)` after two wrong answers, `✗` missed — and how many fell inside
+the 90 minutes. A miss is marked the same before and after its upsolve, since
+every miss gets one. Below the table: the problems in `misc/`, and the upsolve
+list — the misses not written up yet.
 
 STAR.md and SOLUTIONS.md are this tree's own, not the NeetCode ones. With one
 solution to a problem there is nothing to set side by side, so SOLUTIONS.md is
