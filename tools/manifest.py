@@ -55,6 +55,7 @@ LEETCODE = HERE / "leetcode.json"
 
 UA = {"User-Agent": "Mozilla/5.0"}
 LC_LIST = "https://leetcode.com/api/problems/all/"
+LC_GRAPHQL = "https://leetcode.com/graphql"
 LEVEL = {1: "Easy", 2: "Medium", 3: "Hard"}
 
 # The function a neetcode.io problem page calls for its heading. The project id
@@ -129,6 +130,21 @@ def topics() -> list[str]:
 def get(url: str) -> str:
     with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
         return r.read().decode("utf-8", "replace")
+
+
+def graphql(query: str, variables: dict) -> dict:
+    """LeetCode's GraphQL endpoint, which answers without authentication.
+
+    Its REST contest endpoints sit behind a Cloudflare challenge; this does not.
+    A query for something that does not exist is not an HTTP error — it comes
+    back as a null field — so callers check what they asked for.
+    """
+    body = json.dumps({"query": query, "variables": variables}).encode()
+    req = urllib.request.Request(
+        LC_GRAPHQL, data=body, headers={**UA, "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.load(r).get("data") or {}
 
 
 def scrape_neetcode(js: str) -> list[dict]:
@@ -440,15 +456,24 @@ def signature(slug: str) -> dict | None:
              if SIGNATURES.exists() else {})
     if slug in cache:
         return cache[slug]
+    return _remember(slug, _fetch_snippet(slug))
 
-    body = json.dumps({"query": SNIPPET, "variables": {"titleSlug": slug}}).encode()
-    req = urllib.request.Request(
-        "https://leetcode.com/graphql", data=body,
-        headers={**UA, "Content-Type": "application/json"},
-    )
+
+def snippet(slug: str) -> str | None:
+    """LeetCode's C++ starter itself, as the judge hands it to you.
+
+    Always fetched — only `make contest` wants the text, once per problem — but
+    it has just read everything signature() would, so it fills that cache on
+    the way and the problem costs no second request when it is validated.
+    """
+    code = _fetch_snippet(slug)
+    _remember(slug, code)
+    return code
+
+
+def _fetch_snippet(slug: str) -> str | None:
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            question = json.load(r)["data"]["question"]
+        question = graphql(SNIPPET, {"titleSlug": slug}).get("question")
     except Exception as e:
         raise Unresolved(
             f"could not fetch the LeetCode C++ signature for {slug!r} ({e}). "
@@ -456,9 +481,13 @@ def signature(slug: str) -> dict | None:
         ) from e
     if not question:
         raise Unresolved(f"leetcode returned no question for {slug!r}")
-
     snippets = question.get("codeSnippets") or []
-    code = next((s["code"] for s in snippets if s["langSlug"] == "cpp"), None)
+    return next((s["code"] for s in snippets if s["langSlug"] == "cpp"), None)
+
+
+def _remember(slug: str, code: str | None) -> dict | None:
+    cache = (json.loads(SIGNATURES.read_text(encoding="utf-8"))
+             if SIGNATURES.exists() else {})
     cache[slug] = parse_signature(code) if code else None
     _signature_cache.cache_clear()
     SIGNATURES.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n",

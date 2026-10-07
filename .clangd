@@ -7,8 +7,9 @@
 # the first solution in each file and nothing after it.
 #
 # Relative paths here resolve against the directory of the file being edited,
-# not this one, so the include path names both places a solution can sit: the
-# root, where input.cpp is drafted, and src/NN-topic/, two levels down.
+# not this one, so the include path names every place a solution can sit: the
+# root, where input.cpp is drafted, and neetcode/NN-topic/ or contests/<contest>/,
+# both two levels down.
 
 CompileFlags:
   Add:

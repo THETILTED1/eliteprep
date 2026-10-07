@@ -36,6 +36,7 @@ import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -276,17 +277,144 @@ def validate(draft: Draft, sig: dict | None) -> list[str]:
     # renames methods (hasDuplicate there, containsDuplicate on LeetCode).
     if sig:
         for n, b in enumerate(draft.blocks, 1):
-            if sig["cls"] not in b.classes:
-                found = ", ".join(b.classes) or "none"
-                bad.append(
-                    f"solution {n} declares no 'class " + sig["cls"] +
-                    f"' — LeetCode expects one (found: {found})"
-                )
-            for method in sig["methods"]:
-                if not re.search(rf"\b{re.escape(method)}\s*\(", b.body):
-                    bad.append(f"solution {n} does not define {method}()")
+            bad += [f"solution {n} {gap}" for gap in signature_gaps(b.body, sig)]
 
     return bad
+
+
+def signature_gaps(code: str, sig: dict) -> list[str]:
+    """Where code falls short of declaring LeetCode's class and its methods."""
+    gaps: list[str] = []
+    classes = DECL.findall(BLOCK_COMMENT.sub("", code))
+    if sig["cls"] not in classes:
+        gaps.append(f"declares no 'class {sig['cls']}' — LeetCode expects one "
+                    f"(found: {', '.join(classes) or 'none'})")
+    for method in sig["methods"]:
+        if not re.search(rf"\b{re.escape(method)}\s*\(", code):
+            gaps.append(f"does not define {method}()")
+    return gaps
+
+
+# --------------------------------------------------------------------------
+# contest files
+# --------------------------------------------------------------------------
+
+CONTEST_TAGS = ("title", "contest", "verdict", "star", "patterns")
+LINE_COMMENT = re.compile(r"//[^\n]*")
+# A function body with something in it. LeetCode's starter leaves every one
+# empty, so this is what tells a solution from the stub `make contest` wrote.
+FILLED_BODY = re.compile(r"\)\s*(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?\{\s*[^\s}]")
+
+
+def has_solution(text: str) -> bool:
+    return bool(FILLED_BODY.search(LINE_COMMENT.sub("", BLOCK_COMMENT.sub("", text))))
+
+
+def validate_contest(path: Path, lines: list[str]) -> tuple[list[str], dict | None]:
+    """Every reason a contest file is not ready, and the problem it is.
+
+    The same bargain as a topic file — every tag filled, all failures at once —
+    over a smaller set of tags: @title and @contest, which `make contest`
+    wrote, and @verdict, @star and @patterns, which are yours. A problem not
+    solved yet may leave @patterns empty and its stub untouched; that is what
+    puts it in the upsolve list rather than in here.
+    """
+    bad: list[str] = []
+    tags = gen_toc.contest_tags(lines)
+    problem: dict | None = None
+
+    titles = tags.get("title", [])
+    if len(titles) != 1:
+        bad.append(f"expected exactly one @title line, found {len(titles)}")
+    else:
+        try:
+            problem = manifest.resolve_ref(TRAILING_BRACKET.sub("", titles[0][1]))
+        except manifest.Unresolved as e:
+            bad.append(f"@title {e}")
+        else:
+            if manifest.handle(problem) != path.stem:
+                bad.append(f"@title is {manifest.handle(problem)}, but the file is "
+                           f"named {path.stem}")
+
+    placed = tags.get("contest", [])
+    if len(placed) != 1:
+        bad.append(f"expected exactly one @contest line, found {len(placed)}")
+    else:
+        m = gen_toc.CONTEST_LINE.match(placed[0][1])
+        if not m:
+            bad.append(f"@contest must read '{path.parent.name} Q<n> YYYY-MM-DD', "
+                       f"not {placed[0][1]!r}")
+        elif m.group(1) != path.parent.name:
+            bad.append(f"@contest names {m.group(1)}, but the file is in "
+                       f"contests/{path.parent.name}/")
+        else:
+            try:
+                date.fromisoformat(m.group(3))
+            except ValueError:
+                bad.append(f"@contest date {m.group(3)!r} is not a real date")
+
+    verdict = None
+    verdicts = tags.get("verdict", [])
+    if len(verdicts) != 1:
+        bad.append(f"expected exactly one @verdict line, found {len(verdicts)}")
+    else:
+        verdict = gen_toc.parse_verdict(verdicts[0][1])
+        if verdict.error:
+            bad.append(f"@verdict {verdict.error}\n    {gen_toc.VERDICT_FORMS}")
+            verdict = None
+
+    stars = tags.get("star", [])
+    if len(stars) != 1:
+        bad.append(f"expected exactly one @star line, found {len(stars)} — use "
+                   "'@star yes' or '@star no'")
+    elif stars[0][1].lower() not in ("yes", "no"):
+        bad.append(f"@star must be 'yes' or 'no', not {stars[0][1]!r}")
+
+    patterns = tags.get("patterns", [])
+    if len(patterns) != 1:
+        bad.append(f"expected exactly one @patterns line, found {len(patterns)}")
+    elif verdict and verdict.solved and not gen_toc.split_patterns([patterns[0][1]]):
+        bad.append("@patterns is empty — a solved problem says what solved it")
+
+    for name, found in tags.items():
+        if name not in CONTEST_TAGS:
+            for line, _ in found:
+                bad.append(f"@{name} on line {line + 1} is not a contest tag — "
+                           "contest files carry @title, @contest, @verdict, @star "
+                           "and @patterns, over one solution")
+
+    text = "\n".join(lines)
+    solution = has_solution(text)
+    if verdict and verdict.solved and not solution:
+        bad.append(f"@verdict says {verdict}, but every method body is still empty")
+    sig = leetcode_signature(problem) if problem and solution else None
+    if sig:
+        bad += signature_gaps(text, sig)
+        n = DECL.findall(BLOCK_COMMENT.sub("", text)).count(sig["cls"])
+        if n > 1:
+            bad.append(f"declares 'class {sig['cls']}' {n} times — a contest file "
+                       "keeps one solution")
+    return bad, problem
+
+
+def canonicalize_contest(lines: list[str], problem: dict) -> list[str]:
+    """Restamp @title, and write @verdict back in its one spelling."""
+    lines = list(lines)
+    tags = gen_toc.contest_tags(lines)
+    lines[tags["title"][0][0]] = (
+        f"// @title {manifest.handle(problem)} [{problem['difficulty']}]"
+    )
+    line, value = tags["verdict"][0]
+    lines[line] = f"// @verdict {gen_toc.parse_verdict(value)}"
+    return lines
+
+
+def contest_files() -> list[Path]:
+    root = gen_toc.CONTEST_SRC
+    return [f for d in (sorted(root.iterdir()) if root.is_dir() else [])
+            if d.is_dir() and gen_toc.CONTEST_DIR.match(d.name)
+            for f in sorted(d.iterdir())
+            if f.is_file() and gen_toc.FILENAME.match(f.name)]
 
 
 # RemoveBracesLLVM landed in clang-format 14, and an unknown key makes it
@@ -474,7 +602,7 @@ def insert(src: Path, topic: str | None) -> None:
 
     dest_topic = pick_topic(topic, problem)
     handle = manifest.handle(problem)
-    dest = gen_toc.SRC / dest_topic / f"{handle}{src.suffix}"
+    dest = gen_toc.NEETCODE_SRC / dest_topic / f"{handle}{src.suffix}"
     replacing = dest.exists() and dest.resolve() != src.resolve()
 
     lines = canonicalize(lines, draft, problem)
@@ -490,7 +618,7 @@ def insert(src: Path, topic: str | None) -> None:
     dest.write_text(text, encoding="utf-8", newline="\n")
     if src.resolve() != dest.resolve():
         src.unlink()
-    for stale in gen_toc.SRC.glob(f"*/{handle}.*"):  # e.g. a corrected TOPIC
+    for stale in gen_toc.NEETCODE_SRC.glob(f"*/{handle}.*"):  # e.g. a corrected TOPIC
         if stale.resolve() != dest.resolve():
             stale.unlink()
             print(f"  removed {stale.relative_to(ROOT)}")
@@ -507,7 +635,7 @@ def check_all() -> int:
     """
     failed = 0
     failures: list[str] = []
-    for d in sorted(gen_toc.SRC.iterdir()) if gen_toc.SRC.is_dir() else []:
+    for d in sorted(gen_toc.NEETCODE_SRC.iterdir()) if gen_toc.NEETCODE_SRC.is_dir() else []:
         if not (d.is_dir() and gen_toc.TOPIC_DIR.match(d.name)):
             continue
         for f in sorted(d.iterdir()):
@@ -545,6 +673,26 @@ def check_all() -> int:
             if text.encode("utf-8") != f.read_bytes():
                 f.write_text(text, encoding="utf-8", newline="\n")
                 print(f"  tidied {rel}")
+
+    # Contest files are checked where they sit, by their own rules, and tidied
+    # the same way: canonical tags, then clang-format.
+    for f in contest_files():
+        rel = f.relative_to(ROOT)
+        lines = f.read_text(encoding="utf-8").splitlines()
+        bad, problem = validate_contest(f, lines)
+        if bad:
+            print(complain(f, bad), file=sys.stderr)
+            failures.append(f"`{rel}` — " + "; ".join(b.splitlines()[0] for b in bad))
+            failed += 1
+            continue
+        text, note = clang_format(
+            "\n".join(canonicalize_contest(lines, problem)) + "\n", f
+        )
+        if note:
+            print(f"  warning: {rel}: {note}", file=sys.stderr)
+        if text.encode("utf-8") != f.read_bytes():
+            f.write_text(text, encoding="utf-8", newline="\n")
+            print(f"  tidied {rel}")
 
     gen_toc.main(failures)
     if failed:

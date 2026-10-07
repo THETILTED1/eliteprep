@@ -12,14 +12,14 @@ you happen to be looking at. Everything else is derived: the id, the slug, the
 difficulty, the filename and the topic it belongs under. Nothing about a
 problem is typed by hand and nothing is looked up twice.
 
-`src/01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example. Delete it
+`neetcode/01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example. Delete it
 whenever you like; the tooling does not depend on it.
 
 **C++ only.** The validation that makes this worth using — that a solution
 declares the class and methods the judge expects — reads LeetCode's own C++
 starter snippet, so it has nothing to check against in another language.
 
-Three generated indexes, all built from the solved files alone:
+Generated indexes, all built from the solved files alone:
 
 | | |
 |---|---|
@@ -27,9 +27,11 @@ Three generated indexes, all built from the solved files alone:
 | **[STAR.md](STAR.md)** | the starred subset, same breakdown |
 | **[SOLUTIONS.md](SOLUTIONS.md)** | problems that earned more than one approach, side by side |
 | **[OPTIMAL.md](OPTIMAL.md)** | what is not optimal, grouped by the axis it falls short on |
+| **[CONTESTS.md](CONTESTS.md)** | every contest sat, one row each, and what is still owed — see [Contests](#contests) |
 | **[ISSUES.md](ISSUES.md)** | anything that did not fully process, so it is not lost in scrollback |
 
-Everything is ordered by ascending difficulty, then by problem number.
+Everything is ordered by ascending difficulty, then by problem number — except
+CONTESTS.md, which is a log, and runs newest first.
 
 ISSUES.md is the one to check after a batch of inserts. It collects files that
 failed validation, index warnings, and — the case you cannot see otherwise —
@@ -70,12 +72,13 @@ copy, private if they want.
 
 Take later tool changes with `git pull upstream main`. This stays quiet because
 the two sides occupy disjoint paths — the tool is `tools/`, `Makefile`,
-`template.cpp`, `.clang-format`, `.clangd` and `.vscode/`; your work is `src/`
-— so there is nothing to collide. The exception is the three generated indexes,
-which both sides rewrite. They are derived, so take yours and rebuild rather
-than merging:
+`template.cpp`, `.clang-format`, `.clangd` and `.vscode/`; your work is `neetcode/`
+and `contests/` — so there is nothing to collide. The exception is the generated
+indexes, which both sides rewrite. They are derived, so take yours and rebuild
+rather than merging:
 
-    git checkout --ours TOC.md STAR.md SOLUTIONS.md OPTIMAL.md && make sync
+    git checkout --ours TOC.md STAR.md SOLUTIONS.md OPTIMAL.md CONTESTS.md ISSUES.md
+    make sync
 
 Develop the tool in the public repo rather than the private one, and the flow
 stays one-directional. `tools/signatures.json` is gitignored for the same
@@ -116,7 +119,7 @@ decomposition of a field insert wrote — the slug half still goes through the
 one transform, and the id half is checked against what that returns rather than
 trusted, so `0242-contains-duplicate` is rejected as inconsistent.
 
-The file then moves to `src/01-arrays-hashing/0217-contains-duplicate.cpp` and
+The file then moves to `neetcode/01-arrays-hashing/0217-contains-duplicate.cpp` and
 `TOC.md` is regenerated. `template.cpp` carries a second solution block; fill
 it in or delete it, and if you leave it untouched `insert` drops it for you.
 Re-running `insert` on an already-filed problem is safe — the canonical header
@@ -149,15 +152,80 @@ Fill in any part of it and it must then be complete.
 An unknown `TOPIC`, or a problem outside the 250 with no `TOPIC`, are likewise
 errors. Nothing moves unless every check passes.
 
-Every problem must live in one of the 18 topic directories — there is no
-default bucket and no fallback. A source file anywhere else is reported by
-`make sync`, since it would otherwise be indexed nowhere.
+Every problem must live in one of the 18 topic directories, or in a contest's —
+there is no default bucket and no fallback. A source file anywhere else is
+reported by `make sync`, since it would otherwise be indexed nowhere.
+
+## Contests
+
+The topics are a roadmap: a curated set, each problem filed where it teaches
+something. Contest problems are the opposite — whatever four LeetCode set that
+week — and filing them under the topics would bury the roadmap under volume.
+So they live apart, one directory per contest, and touch nothing but their own
+index and `make search`:
+
+    make contest                          # the latest contests, and which are done
+    make contest C=biweekly-190           # a draft per question
+    $EDITOR contests/biweekly-190/*.cpp   # paste, then fill in three tags
+    make sync
+
+`C=` is the contest as LeetCode numbers it, `weekly-N` or `biweekly-N`. The
+question list comes from LeetCode's GraphQL endpoint, which answers without
+logging in, and each title then goes through the same manifest as everything
+else, so the files are named and stamped as a filed solution would be — down to
+LeetCode's own C++ starter as the body, ready to write in or paste over:
+
+```cpp
+// @title 4034-minimum-bishop-moves-to-reach-target [Medium]   <- written for you
+// @contest biweekly-190 Q1 2026-10-05                         <- written for you
+
+// @verdict subs 1 pass
+// @star no
+// @patterns math, parity
+
+class Solution { ... };
+```
+
+`DATE=` sets the day on `@contest` when it is not today. A file that already
+exists is never touched, so `make contest` can be rerun safely.
+
+**One solution per file.** The point of contests is volume, so there are no
+`@solution` blocks, and no `@optimal`, `@primary` or `@related` — a contest
+file carries those five tags and nothing else, and `make sync` says so if one
+from a topic file finds its way in. It is otherwise held to the same bargain:
+every tag filled, all failures reported at once, LeetCode's class and methods
+present and declared once.
+
+**`@verdict` is what happened in the window**, in LeetCode's own terms:
+
+    // @verdict subs 1 pass             accepted first time
+    // @verdict subs 3 pass             two wrong answers, then accepted
+    // @verdict subs 1 fail             not solved in the 90 minutes
+    // @verdict subs 0 fail upsolved    not even submitted, but solved since
+
+`subs` counts every submission, the accepted one included. There is no clock:
+the count is what you remember afterwards, and a time nobody noted down when it
+happened is one that gets made up later.
+
+A fail stays a fail. Solving it later appends `upsolved` instead of rewriting
+the result, so what a contest's row says about the day never changes after
+it. Until then the stub may stay empty and `@patterns` blank — that is what
+puts a problem on the upsolve list rather than in ISSUES.md.
+
+[CONTESTS.md](CONTESTS.md) is one row per contest, newest first, with a cell per
+question — `✓` solved in the window, `✓ (2)` after two wrong answers, `✗` not
+solved, `↻` once upsolved — and how many of the four fell inside the 90 minutes.
+Below the table, the upsolve list and the starred problems.
+
+`make search` covers both: topic matches first, contest matches beneath them in
+a section of their own, from the one shared `@patterns` vocabulary.
 
 ## Layout
 
-    src/NN-topic-name/LLLL-problem-slug.cpp
+    neetcode/NN-topic-name/LLLL-problem-slug.cpp
+    contests/biweekly-N/LLLL-problem-slug.cpp     (see Contests, above)
 
-The eighteen topic directories live under `src/`, which keeps the repository
+The eighteen topic directories live under `neetcode/`, which keeps the repository
 front page to the tool and the indexes. They are NeetCode's roadmap topics,
 prefixed `01`–`18` in its order, which is pedagogical rather than alphabetical. The 18 topics are kept because they are a
 *single-label* partition — every problem has exactly one home — which is what a
@@ -340,7 +408,7 @@ comment, or the decoration down the left edge of a block comment — and replace
 exactly as many characters as it removes. So the line count and the column of
 every character of real code survive, and a position in what clangd read is the
 same position in the file on disk. Nothing is mapped and nothing can drift.
-`python3 tools/stitch.py src/11-graphs/0127-word-ladder.cpp` prints what clangd
+`python3 tools/stitch.py neetcode/11-graphs/0127-word-ladder.cpp` prints what clangd
 sees, if you want to look at it.
 
 **Nothing that can write to a file is offered.** clangd is reasoning about text
@@ -418,13 +486,14 @@ Bash — the same three commands are:
 
 ## Manifests
 
-`make new`, `make insert` and `make sync` are the only make targets. The two
-scripts they use run standalone if you need them:
+Every make target is a bare call into a script, and the scripts run standalone
+if you need them:
 
 
     python3 tools/manifest.py            # refresh both caches, then verify
     python3 tools/manifest.py <query>    # resolve one string
-    python3 tools/gen_toc.py             # rewrite the three indexes
+    python3 tools/gen_toc.py             # rewrite the indexes
+    python3 tools/contest.py [<contest>] # make contest
 
 `manifest.resolve()` takes one string, sourceable from either site. All of
 these land on `0217-contains-duplicate`:

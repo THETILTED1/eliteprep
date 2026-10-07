@@ -149,12 +149,14 @@ def encode(message: dict) -> bytes:
 def stitched(text: str) -> str:
     """Stitch a filed solution; leave anything else alone.
 
-    The marker is the guard: a file with no @solution in it is not one of ours,
-    and a stray commented-out class in some other C++ file should stay
-    commented out. A rewrite that throws is not worth failing the editor over —
-    the original text still parses as well as it ever did.
+    The marker is the guard: a file with neither @solution nor a contest's
+    @verdict in it is not one of ours, and a stray commented-out class in some
+    other C++ file should stay commented out. A contest file has no @solution
+    blocks to wrap, but its helper types want uncommenting all the same. A
+    rewrite that throws is not worth failing the editor over — the original
+    text still parses as well as it ever did.
     """
-    if "@solution" not in text:
+    if "@solution" not in text and "@verdict" not in text:
         return text
     try:
         return stitch.stitch(text)
