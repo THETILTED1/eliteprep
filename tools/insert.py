@@ -22,8 +22,13 @@ validate() below and all failures are reported at once. The one exception is a
 second solution block left exactly as the template wrote it, which is dropped
 rather than rejected — so an unused block costs nothing.
 
-The topic is inferred for anything in the NeetCode 250, otherwise pass TOPIC=.
-Re-inserting a problem overwrites whatever was filed under that handle before.
+neetcode/ holds NeetCode's problems and nothing else, so the topic is always
+NeetCode's own and a problem outside the 250 is refused — `make misc` files it
+under contests/ instead. Re-inserting a problem overwrites whatever was filed
+under that handle before.
+
+Contest files are not inserted: `make contest` and `make misc` write them where
+they belong, and `make sync` checks them there by their own rules.
 """
 
 from __future__ import annotations
@@ -299,28 +304,26 @@ def signature_gaps(code: str, sig: dict) -> list[str]:
 # contest files
 # --------------------------------------------------------------------------
 
-CONTEST_TAGS = ("title", "contest", "verdict", "star", "patterns")
-LINE_COMMENT = re.compile(r"//[^\n]*")
-# A function body with something in it. LeetCode's starter leaves every one
-# empty, so this is what tells a solution from the stub `make contest` wrote.
-FILLED_BODY = re.compile(r"\)\s*(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?\{\s*[^\s}]")
-
-
-def has_solution(text: str) -> bool:
-    return bool(FILLED_BODY.search(LINE_COMMENT.sub("", BLOCK_COMMENT.sub("", text))))
+CONTEST_TAGS = ("title", "contest", "verdict", "solution", "star", "patterns")
 
 
 def validate_contest(path: Path, lines: list[str]) -> tuple[list[str], dict | None]:
     """Every reason a contest file is not ready, and the problem it is.
 
-    The same bargain as a topic file — every tag filled, all failures at once —
-    over a smaller set of tags: @title and @contest, which `make contest`
-    wrote, and @verdict, @star and @patterns, which are yours. A problem not
-    solved yet may leave @patterns empty and its stub untouched; that is what
-    puts it in the upsolve list rather than in here.
+    The same bargain as a NeetCode file — every tag filled, all failures at
+    once — over the tags a contest file carries: @title and @contest, which
+    `make contest` or `make misc` wrote, and @verdict, @solution, @star and
+    @patterns, which are yours. A miss not yet upsolved may leave its stub
+    untouched and @solution and @patterns blank; that is what puts it on the
+    upsolve list rather than in here. Once there is code, all of it is owed.
+
+    @solution is a complexity and nothing more. There is one solution, so there
+    is nothing for @optimal to rank: a pass in the window is as good as the
+    judge needed, and an upsolve is written from the editorial's best.
     """
     bad: list[str] = []
     tags = gen_toc.contest_tags(lines)
+    contest = path.parent.name
     problem: dict | None = None
 
     titles = tags.get("title", [])
@@ -335,18 +338,24 @@ def validate_contest(path: Path, lines: list[str]) -> tuple[list[str], dict | No
             if manifest.handle(problem) != path.stem:
                 bad.append(f"@title is {manifest.handle(problem)}, but the file is "
                            f"named {path.stem}")
+            if contest == gen_toc.MISC and problem.get("in_neetcode"):
+                bad.append(f"{manifest.handle(problem)} is a NeetCode problem, so it "
+                           "belongs in neetcode/ — file it with make new and make insert")
 
     placed = tags.get("contest", [])
     if len(placed) != 1:
         bad.append(f"expected exactly one @contest line, found {len(placed)}")
+    elif contest == gen_toc.MISC:
+        if placed[0][1] != gen_toc.MISC:
+            bad.append(f"@contest in contests/misc/ reads 'misc', not {placed[0][1]!r}")
     else:
         m = gen_toc.CONTEST_LINE.match(placed[0][1])
         if not m:
-            bad.append(f"@contest must read '{path.parent.name} Q<n> YYYY-MM-DD', "
+            bad.append(f"@contest must read '{contest} Q<n> YYYY-MM-DD', "
                        f"not {placed[0][1]!r}")
-        elif m.group(1) != path.parent.name:
+        elif m.group(1) != contest:
             bad.append(f"@contest names {m.group(1)}, but the file is in "
-                       f"contests/{path.parent.name}/")
+                       f"contests/{contest}/")
         else:
             try:
                 date.fromisoformat(m.group(3))
@@ -363,6 +372,22 @@ def validate_contest(path: Path, lines: list[str]) -> tuple[list[str], dict | No
             bad.append(f"@verdict {verdict.error}\n    {gen_toc.VERDICT_FORMS}")
             verdict = None
 
+    text = "\n".join(lines)
+    solution = gen_toc.has_solution(text)
+    if verdict and verdict.passed and not solution:
+        bad.append(f"@verdict says {verdict}, but every method body is still empty")
+
+    complexity = tags.get("solution", [])
+    if len(complexity) != 1:
+        bad.append(f"expected exactly one @solution line, found {len(complexity)} — "
+                   "one solution, its complexity on the line below @verdict")
+    elif solution and not complexity[0][1]:
+        bad.append("@solution is empty — give its complexity, e.g. "
+                   "'O(N log N) time O(1) space'")
+    elif solution and not gen_toc.split_complexity(complexity[0][1])[1]:
+        bad.append("@solution must give both bounds, e.g. 'O(N log N) time O(1) "
+                   f"space', not {complexity[0][1]!r}")
+
     stars = tags.get("star", [])
     if len(stars) != 1:
         bad.append(f"expected exactly one @star line, found {len(stars)} — use "
@@ -373,20 +398,16 @@ def validate_contest(path: Path, lines: list[str]) -> tuple[list[str], dict | No
     patterns = tags.get("patterns", [])
     if len(patterns) != 1:
         bad.append(f"expected exactly one @patterns line, found {len(patterns)}")
-    elif verdict and verdict.solved and not gen_toc.split_patterns([patterns[0][1]]):
-        bad.append("@patterns is empty — a solved problem says what solved it")
+    elif solution and not gen_toc.split_patterns([patterns[0][1]]):
+        bad.append("@patterns is empty — once there is a solution, say what solved it")
 
     for name, found in tags.items():
         if name not in CONTEST_TAGS:
             for line, _ in found:
                 bad.append(f"@{name} on line {line + 1} is not a contest tag — "
-                           "contest files carry @title, @contest, @verdict, @star "
-                           "and @patterns, over one solution")
+                           "contest files carry @title, @contest, @verdict, "
+                           "@solution, @star and @patterns, over one solution")
 
-    text = "\n".join(lines)
-    solution = has_solution(text)
-    if verdict and verdict.solved and not solution:
-        bad.append(f"@verdict says {verdict}, but every method body is still empty")
     sig = leetcode_signature(problem) if problem and solution else None
     if sig:
         bad += signature_gaps(text, sig)
@@ -555,25 +576,13 @@ def canonicalize(lines: list[str], draft: Draft, problem: dict) -> list[str]:
     return lines
 
 
-def pick_topic(given: str | None, problem: dict) -> str:
-    known = manifest.topics()
-    if given:
-        for d in known:
-            if given in (d, d.split("-", 1)[1]):
-                return d
-        raise InsertError(
-            f"unknown topic {given!r}\n  choose one of: "
-            + ", ".join(d.split("-", 1)[1] for d in known)
-        )
-    if problem["topic"]:
-        return problem["topic"]
-    raise InsertError(
-        f"{problem['title']!r} ({problem['id']}) is not in the NeetCode 250, so "
-        "it has no roadmap topic.\n  Re-run with TOPIC=, e.g. TOPIC=binary-search"
-    )
+def outside_neetcode(problem: dict) -> str:
+    return (f"{manifest.handle(problem)} is not a NeetCode problem, and neetcode/ "
+            "holds the NeetCode 250 alone — file it on its own with: "
+            f"make misc TITLE=\"{problem['title']}\"")
 
 
-def insert(src: Path, topic: str | None) -> None:
+def insert(src: Path) -> None:
     if not src.exists():
         raise InsertError(f"{src} does not exist — run 'make new' first")
 
@@ -592,6 +601,8 @@ def insert(src: Path, topic: str | None) -> None:
     except manifest.Unresolved as e:
         raise InsertError(f"{src} is not ready to insert:\n"
                           + complain(src, [f"@title {e}"])) from e
+    if not problem.get("in_neetcode"):  # before validating: nothing else matters
+        raise InsertError(outside_neetcode(problem))
 
     sig = leetcode_signature(problem)
 
@@ -600,9 +611,8 @@ def insert(src: Path, topic: str | None) -> None:
         raise InsertError(f"{src} is not ready to insert:\n"
                           + complain(src, bad))
 
-    dest_topic = pick_topic(topic, problem)
     handle = manifest.handle(problem)
-    dest = gen_toc.NEETCODE_SRC / dest_topic / f"{handle}{src.suffix}"
+    dest = gen_toc.NEETCODE_SRC / problem["topic"] / f"{handle}{src.suffix}"
     replacing = dest.exists() and dest.resolve() != src.resolve()
 
     lines = canonicalize(lines, draft, problem)
@@ -618,7 +628,7 @@ def insert(src: Path, topic: str | None) -> None:
     dest.write_text(text, encoding="utf-8", newline="\n")
     if src.resolve() != dest.resolve():
         src.unlink()
-    for stale in gen_toc.NEETCODE_SRC.glob(f"*/{handle}.*"):  # e.g. a corrected TOPIC
+    for stale in gen_toc.NEETCODE_SRC.glob(f"*/{handle}.*"):  # NeetCode moved it
         if stale.resolve() != dest.resolve():
             stale.unlink()
             print(f"  removed {stale.relative_to(ROOT)}")
@@ -631,7 +641,8 @@ def check_all() -> int:
     For when a file was edited in place — a complexity corrected, a third
     solution added. A file that validates is canonicalised and clang-formatted
     where it sits; one that does not is reported and left alone. Nothing ever
-    moves between topics here — that is insert's job, with TOPIC=.
+    moves between topics here — a file outside the topic NeetCode gives it is
+    reported, and `make insert SRC=` on it moves it.
     """
     failed = 0
     failures: list[str] = []
@@ -650,7 +661,12 @@ def check_all() -> int:
                         f"expected exactly one @title line, found {len(draft.title)}"
                     )
                 problem = manifest.resolve_ref(draft.title[0])
+                if not problem.get("in_neetcode"):
+                    raise InsertError(outside_neetcode(problem))
                 bad = validate(draft, leetcode_signature(problem))
+                if problem["topic"] != d.name:
+                    bad.append(f"NeetCode files this under {problem['topic']}, not "
+                               f"{d.name} — make insert SRC={rel} moves it")
             except (InsertError, manifest.Unresolved) as e:
                 print(f"{rel}: {e}", file=sys.stderr)
                 failures.append(f"`{rel}` — {str(e).splitlines()[0]}")
@@ -715,7 +731,6 @@ def start_draft(dest: Path) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("src", nargs="?", default="input.cpp")
-    ap.add_argument("--topic", help="one of the 18 topics; inferred within the NeetCode 250")
     ap.add_argument("--sync", action="store_true",
                     help="re-validate every filed problem and rebuild the indexes")
     ap.add_argument("--new", action="store_true",
@@ -727,7 +742,7 @@ def main() -> int:
     if args.sync:
         return check_all()
     try:
-        insert(Path(args.src), args.topic)
+        insert(Path(args.src))
     except InsertError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1

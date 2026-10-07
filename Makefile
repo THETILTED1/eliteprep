@@ -2,14 +2,15 @@
 # make sync                                     tidy filed files, rebuild indexes
 # make search                                  list every pattern in use
 # make search PATTERN="hashing, sorting"        narrow to matching solutions
-# make insert                                   file input.cpp
-# make insert SRC=other.cpp TOPIC=arrays-hashing
+# make insert                                   file input.cpp under neetcode/
+# make insert SRC=other.cpp
 # make contest                                  list the latest contests
 # make contest C=biweekly-190                   a draft per question, under contests/
 # make contest C=weekly-470 DATE=2026-10-04     ... sat on some other day
+# make misc TITLE="two sum"                     one problem on its own, contests/misc/
 #
-# SRC defaults to input.cpp. TOPIC is required only for problems outside the
-# NeetCode 250; within it the topic is inferred.
+# SRC defaults to input.cpp. neetcode/ takes NeetCode's problems alone, each in
+# NeetCode's own topic; anything else is make misc.
 
 SRC ?= input.cpp
 
@@ -20,13 +21,13 @@ SRC ?= input.cpp
 PY := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null)
 PY := $(if $(PY),$(PY),python3)
 
-.PHONY: new insert sync search contest
+.PHONY: new insert sync search contest misc
 
 new:
 	@$(PY) tools/insert.py --new $(SRC)
 
 insert:
-	@$(PY) tools/insert.py $(SRC) $(if $(TOPIC),--topic $(TOPIC))
+	@$(PY) tools/insert.py $(SRC)
 
 sync:
 	@$(PY) tools/insert.py --sync
@@ -36,3 +37,6 @@ search:
 
 contest:
 	@$(PY) tools/contest.py $(C) $(if $(DATE),--date $(DATE))
+
+misc:
+	@$(PY) tools/contest.py misc --title "$(TITLE)"

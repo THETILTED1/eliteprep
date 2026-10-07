@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-"""Regenerate the three generated indexes, from the solved files alone.
+"""Regenerate the generated indexes, from the solved files alone.
 
-    TOC.md        every solved problem, broken down by topic
-    STAR.md       the starred subset, same breakdown
-    SOLUTIONS.md  where more than one approach was kept, side by side
-    OPTIMAL.md    what is not optimal, by the axis it falls short on
-    ISSUES.md     anything that did not fully process
-    CONTESTS.md   every contest attempted, one row each, and what is still owed
+Each section keeps its own, beside its problems:
 
-Contest problems live under contests/ rather than neetcode/, and appear in nothing
-but CONTESTS.md and `make search` — the topic indexes stay the roadmap's.
+    neetcode/TOC.md        every solved problem, broken down by topic
+    neetcode/STAR.md       the starred subset, same breakdown
+    neetcode/SOLUTIONS.md  where more than one approach was kept, side by side
+    neetcode/OPTIMAL.md    what is not optimal, by the axis it falls short on
+    contests/CONTESTS.md   a row per contest, the standalone problems, and what
+                           is still owed
+
+Two cross both sections, and so sit at the root:
+
+    ISSUES.md              anything that did not fully process
+    search.md              `make search`, scratch and gitignored
+
+Links are written relative to the page that holds them, so each section's pages
+work wherever the section is being read from.
 
 TOC.md is the cover-all and carries nothing but the topic breakdown, so it
 stays readable at a hundred problems. Neither it nor STAR.md lists solutions —
@@ -47,6 +54,7 @@ from __future__ import annotations
 
 import re
 import sys
+import os
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -55,21 +63,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import manifest  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-NEETCODE_SRC = ROOT / "neetcode"   # the eighteen topic directories live here
-TOC = ROOT / "TOC.md"
-STAR = ROOT / "STAR.md"
-SOLUTIONS = ROOT / "SOLUTIONS.md"
-OPTIMAL = ROOT / "OPTIMAL.md"
+NEETCODE_SRC = ROOT / "neetcode"   # the eighteen topic directories, and their indexes
+CONTEST_SRC = ROOT / "contests"    # a directory per contest, misc/, and their index
+TOC = NEETCODE_SRC / "TOC.md"
+STAR = NEETCODE_SRC / "STAR.md"
+SOLUTIONS = NEETCODE_SRC / "SOLUTIONS.md"
+OPTIMAL = NEETCODE_SRC / "OPTIMAL.md"
+CONTESTS = CONTEST_SRC / "CONTESTS.md"
 ISSUES = ROOT / "ISSUES.md"
-CONTESTS = ROOT / "CONTESTS.md"
 SEARCH = ROOT / "search.md"   # scratch output of `make search`, gitignored
-CONTEST_SRC = ROOT / "contests"   # one directory per contest, weekly-N or biweekly-N
 
 TOPIC_DIR = re.compile(r"^\d\d-[a-z0-9-]+$")
-CONTEST_DIR = re.compile(r"^(weekly|biweekly)-(\d+)$")
+MISC = "misc"   # contests/misc/: problems solved on their own, not in a contest
+CONTEST_DIR = re.compile(r"^(weekly|biweekly)-(\d+)$|^misc$")
 FILENAME = re.compile(r"^(\d{4})-([a-z0-9-]+)\.(cpp|cc)$")
 TAG = re.compile(r"^@(\w+)\s*(.*)$")
 COMMENT = re.compile(r"^\s*//\s?(.*)$")
+
+BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
+LINE_COMMENT = re.compile(r"//[^\n]*")
+# A function body with something in it. LeetCode's starter leaves every one
+# empty, so this is what tells a solution from the stub `make contest` wrote.
+FILLED_BODY = re.compile(r"\)\s*(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?\{\s*[^\s}]")
 
 DIFFICULTIES = ("Easy", "Medium", "Hard")
 RANK = {d: i for i, d in enumerate(DIFFICULTIES)}
@@ -182,18 +197,21 @@ def plural(n: int, word: str) -> str:
 # @verdict subs 1 pass
 # @verdict subs 3 pass
 # @verdict subs 1 fail
-# @verdict subs 0 fail upsolved
+# @verdict subs 0 fail
 #
-# What happened in the window, in LeetCode's own terms. `subs` counts every
-# submission, the accepted one included, so `subs 3 pass` is two wrong answers
-# and then the right one. No clock: the count is what is remembered afterwards,
-# and a field nobody notes down at the time is one that gets made up later. A
-# fail stays a fail — solving it afterwards appends `upsolved` rather than
-# rewriting the result, so a contest's row in CONTESTS.md says what happened on
-# the day for good.
-VERDICT_FORMS = "subs 1 pass | subs 3 pass | subs 0 fail | subs 2 fail upsolved"
+# Whether you solved it yourself, in LeetCode's own terms: in the window for a
+# contest, unaided for a standalone problem. `subs` counts every submission, the
+# accepted one included, so `subs 3 pass` is two wrong answers and then the
+# right one. No clock: the count is what is remembered afterwards, and a field
+# nobody notes down at the time is one that gets made up later.
+#
+# A fail stays a fail. Every miss gets studied and solved, and a solution in a
+# file marked fail is that upsolve — the verdict keeps saying what happened on
+# the day, and the code says it has been dealt with since.
+VERDICT_FORMS = "subs 1 pass | subs 3 pass | subs 1 fail | subs 0 fail"
 
 # @contest biweekly-190 Q1 2026-10-05 — written by `make contest`, never typed
+# @contest misc                      — written by `make misc`
 CONTEST_LINE = re.compile(r"^((?:weekly|biweekly)-\d+)\s+Q(\d+)\s+(\d{4}-\d\d-\d\d)$")
 
 
@@ -203,55 +221,48 @@ class Verdict:
 
     subs: int = 0
     passed: bool = False
-    upsolved: bool = False
     error: str = ""
 
     @property
     def wrong(self) -> int:
         return self.subs - 1 if self.passed else self.subs
 
-    @property
-    def solved(self) -> bool:
-        """Is there a working solution in the file, from the window or since?"""
-        return self.passed or self.upsolved
-
     def __str__(self) -> str:
-        return (f"subs {self.subs} " + ("pass" if self.passed else "fail")
-                + (" upsolved" if self.upsolved else ""))
+        return f"subs {self.subs} " + ("pass" if self.passed else "fail")
 
 
 def parse_verdict(value: str) -> Verdict:
     """'subs 3 pass' -> Verdict(3, passed=True)."""
     words = value.split()
     if not words:
-        return Verdict(error="is empty — say how the window went, e.g. "
+        return Verdict(error="is empty — say how it went, e.g. "
                              "'subs 1 pass' or 'subs 0 fail'")
     if len(words) < 3 or words[0].lower() != "subs" or not words[1].isdigit():
-        return Verdict(error="must read 'subs N pass', 'subs N fail' or "
-                             f"'subs N fail upsolved', not {value.strip()!r}")
+        return Verdict(error="must read 'subs N pass' or 'subs N fail', "
+                             f"not {value.strip()!r}")
     subs, outcome, rest = int(words[1]), words[2].lower(), words[3:]
 
-    if outcome == "pass":
-        if subs < 1:
-            return Verdict(error="a pass is at least one submission — the accepted one")
-        if rest:
-            return Verdict(error=f"'pass' takes nothing after it, found {' '.join(rest)!r}"
-                                 " — a problem solved after the window is 'fail upsolved'")
-        return Verdict(subs, passed=True)
+    if outcome not in ("pass", "fail"):
+        return Verdict(error=f"expected 'pass' or 'fail' after the count, "
+                             f"not {words[2]!r}")
+    if rest:
+        return Verdict(error=f"'{outcome}' takes nothing after it, found "
+                             f"{' '.join(rest)!r} — a solution written after a "
+                             "fail is the upsolve, with nothing to add here")
+    if outcome == "pass" and subs < 1:
+        return Verdict(error="a pass is at least one submission — the accepted one")
+    return Verdict(subs, passed=outcome == "pass")
 
-    if outcome == "fail":
-        if not rest:
-            return Verdict(subs)
-        if len(rest) == 1 and rest[0].lower() == "upsolved":
-            return Verdict(subs, upsolved=True)
-        return Verdict(error="'fail' takes nothing after it but 'upsolved', "
-                             f"found {' '.join(rest)!r}")
 
-    return Verdict(error=f"expected 'pass' or 'fail' after the count, not {words[2]!r}")
+def has_solution(text: str) -> bool:
+    """Has any method been written, or is it still LeetCode's empty starter?"""
+    return bool(FILLED_BODY.search(LINE_COMMENT.sub("", BLOCK_COMMENT.sub("", text))))
 
 
 def contest_name(contest: str) -> str:
     """biweekly-190 -> Biweekly 190."""
+    if contest == MISC:
+        return "Misc"
     kind, n = CONTEST_DIR.match(contest).groups()
     return f"{kind.title()} {n}"
 
@@ -291,7 +302,13 @@ class Entry:
 
     @property
     def link(self) -> str:
-        return f"neetcode/{self.topic}/{self.path.name}"
+        """From a page in neetcode/."""
+        return f"{self.topic}/{self.path.name}"
+
+    @property
+    def href(self) -> str:
+        """From the root, where ISSUES.md and search.md sit."""
+        return f"neetcode/{self.link}"
 
     @property
     def name(self) -> str:
@@ -323,21 +340,23 @@ class Entry:
 
 @dataclass
 class Attempt:
-    """One problem of one contest, filed as contests/<contest>/NNNN-slug.cpp.
+    """One problem under contests/: a contest's, or a standalone one in misc/.
 
-    Its tags are all file-level — a contest file keeps one solution, so there
-    are no @solution blocks for them to belong to.
+    Its tags are all file-level — a contest file keeps one solution, so its
+    @solution is a tag like the rest rather than a block with an @end.
     """
 
     id: int
     slug: str
     title: str
     difficulty: str
-    contest: str             # the directory: weekly-470, biweekly-190
+    contest: str             # the directory: weekly-470, biweekly-190, misc
     path: Path
     q: int | None = None     # position in the contest, from @contest
     date: str = ""           # the day it was sat, from @contest
     verdict: Verdict | None = None
+    solution: bool = False   # anything written yet, or still the starter
+    complexity: str = ""
     star: bool = False
     patterns: list[str] = field(default_factory=list)
 
@@ -347,7 +366,23 @@ class Attempt:
 
     @property
     def link(self) -> str:
-        return f"contests/{self.contest}/{self.path.name}"
+        """From a page in contests/."""
+        return f"{self.contest}/{self.path.name}"
+
+    @property
+    def href(self) -> str:
+        """From the root, where ISSUES.md and search.md sit."""
+        return f"contests/{self.link}"
+
+    @property
+    def upsolved(self) -> bool:
+        return bool(self.verdict and not self.verdict.error
+                    and not self.verdict.passed and self.solution)
+
+    @property
+    def owed(self) -> bool:
+        return bool(self.verdict and not self.verdict.error
+                    and not self.verdict.passed and not self.solution)
 
     @property
     def name(self) -> str:
@@ -365,7 +400,7 @@ class Attempt:
             return "?"
         if v.passed:
             return "✓" + (f" ({v.wrong})" if v.wrong else "")
-        return "↻" if v.upsolved else "✗"
+        return "↻" if self.solution else "✗"
 
     @property
     def cell(self) -> str:
@@ -499,8 +534,8 @@ def collect_contests() -> tuple[list[Attempt], list[str]]:
         if not d.is_dir():
             continue
         if not CONTEST_DIR.match(d.name):
-            warnings.append(f"contests/{d.name} is not named weekly-N or biweekly-N, "
-                            "so it is indexed nowhere")
+            warnings.append(f"contests/{d.name} is not named weekly-N, biweekly-N "
+                            "or misc, so it is indexed nowhere")
             continue
         for f in sorted(d.iterdir()):
             if not f.is_file() or f.name.startswith("."):
@@ -518,17 +553,22 @@ def collect_contests() -> tuple[list[Attempt], list[str]]:
             if p["id"] != int(m.group(1)):
                 warnings.append(f"{rel}: slug is problem {p['id']}, not {m.group(1)}")
 
-            tags = contest_tags(f.read_text(encoding="utf-8").splitlines())
+            text = f.read_text(encoding="utf-8")
+            tags = contest_tags(text.splitlines())
             a = Attempt(int(m.group(1)), m.group(2), p["title"], p["difficulty"],
-                        d.name, f)
-            placed = [CONTEST_LINE.match(v) for _, v in tags.get("contest", [])]
-            if len(placed) == 1 and placed[0] and placed[0].group(1) == d.name:
-                a.q, a.date = int(placed[0].group(2)), placed[0].group(3)
+                        d.name, f, solution=has_solution(text))
+            placed = [v for _, v in tags.get("contest", [])]
+            line = CONTEST_LINE.match(placed[0]) if len(placed) == 1 else None
+            if d.name == MISC:
+                pass  # nothing to place it by; sync checks it reads `misc`
+            elif line and line.group(1) == d.name:
+                a.q, a.date = int(line.group(2)), line.group(3)
             else:
                 warnings.append(f"{rel} has no usable @contest line, so it has no "
                                 "column in CONTESTS.md")
             if len(tags.get("verdict", [])) == 1:
                 a.verdict = parse_verdict(tags["verdict"][0][1])
+            a.complexity = " ".join(v for _, v in tags.get("solution", []))
             a.star = any(v.lower() == "yes" for _, v in tags.get("star", []))
             a.patterns = split_patterns([v for _, v in tags.get("patterns", [])])
             attempts.append(a)
@@ -549,12 +589,17 @@ LEGEND = ("**Opt** · ✓ an optimal solution is here · "
           "[·](OPTIMAL.md) not one yet")
 
 
+def relative(target: Path, page: Path) -> str:
+    """A link to target, as written on page."""
+    return Path(os.path.relpath(target, page.parent)).as_posix()
+
+
 def nav(current: Path) -> str:
-    links = [("TOC.md", "Index"), ("STAR.md", "Starred"),
-             ("SOLUTIONS.md", "Solutions"), ("OPTIMAL.md", "Optimal"),
-             ("CONTESTS.md", "Contests"), ("ISSUES.md", "Issues")]
+    pages = [(TOC, "NeetCode"), (STAR, "Starred"), (SOLUTIONS, "Solutions"),
+             (OPTIMAL, "Optimal"), (CONTESTS, "Contests"), (ISSUES, "Issues")]
     return " · ".join(
-        label if f == current.name else f"[{label}]({f})" for f, label in links
+        label if page == current else f"[{label}]({relative(page, current)})"
+        for page, label in pages
     )
 
 
@@ -686,9 +731,9 @@ def emit_catalogue(entries: list[Entry], attempts: list[Attempt]) -> tuple[str, 
 
     count = lambda k: len(by_pattern.get(k, [])) + len(in_contests.get(k, []))
     for pat in sorted(patterns, key=lambda k: (-count(k), k)):
-        links = ", ".join(f"[{e.title}]({e.link})" for e in easiest(by_pattern[pat]))
+        links = ", ".join(f"[{e.title}]({e.href})" for e in easiest(by_pattern[pat]))
         if in_contests:
-            more = ", ".join(f"[{a.title}]({a.link})" for a in easiest(in_contests[pat]))
+            more = ", ".join(f"[{a.title}]({a.href})" for a in easiest(in_contests[pat]))
             out.append(f"| `{pat}` | {count(pat)} | {links} | {more} |")
         else:
             out.append(f"| `{pat}` | {count(pat)} | {links} |")
@@ -730,24 +775,26 @@ def emit_search(entries: list[Entry], attempts: list[Attempt],
              + plural(len({e.handle for e, _, _ in hits}), 'problem')] if hits else []
     if contest_hits:
         found.append(plural(len(contest_hits), "contest problem"))
-    out += [f"**{' and '.join(found)}**, easiest first.", "",
-            "[Index](TOC.md) · [Contests](CONTESTS.md)", ""]
+    out += [f"**{' and '.join(found)}**, easiest first.", "", nav(SEARCH), ""]
     if hits:
         out += ["| # | Problem | Diff | Approach | Time | Space |",
                 "|---|---|---|---|---|---|"]
         for e, s, matched in hits:
             time, space = split_complexity(s.complexity)
-            out.append(f"| {e.id} | [{e.title}]({e.link}) | {e.difficulty} "
+            out.append(f"| {e.id} | [{e.title}]({e.href}) | {e.difficulty} "
                        f"| {bold(s.patterns, matched)} "
                        f"| `{time}` | {f'`{space}`' if space else ''} |")
         out.append("")
     if contest_hits:
         out += ["## Contests", "",
-                "| # | Problem | Diff | Patterns | Contest | Result |",
-                "|---|---|---|---|---|---|"]
+                "| # | Problem | Diff | Approach | Time | Space | Where |",
+                "|---|---|---|---|---|---|---|"]
         for a, matched in contest_hits:
-            out.append(f"| {a.id} | {a.name} | {a.difficulty} "
-                       f"| {bold(a.patterns, matched)} | {a.where} | {a.result} |")
+            time, space = split_complexity(a.complexity)
+            out.append(f"| {a.id} | [{a.title}]({a.href}){' ⭐' if a.star else ''} "
+                       f"| {a.difficulty} | {bold(a.patterns, matched)} "
+                       f"| {f'`{time}`' if time else ''} "
+                       f"| {f'`{space}`' if space else ''} | {a.where} |")
         out.append("")
     return "\n".join(out), len(hits) + len(contest_hits)
 
@@ -817,14 +864,16 @@ def emit_optimal(entries: list[Entry]) -> tuple[str, int]:
 
 
 def emit_contests(attempts: list[Attempt]) -> str:
-    """One row per contest, newest first, a cell per question."""
+    """A row per contest, newest first, then the standalone problems in misc/."""
     out = ["# Contests", "", GENERATED, ""]
     by_contest: dict[str, list[Attempt]] = defaultdict(list)
     for a in attempts:
         by_contest[a.contest].append(a)
-    if not by_contest:
-        return "\n".join(out + [nav(CONTESTS), "", "No contest attempted yet — "
-                                "`make contest` lists the latest.", ""])
+    misc = by_contest.pop(MISC, [])
+    if not attempts:
+        return "\n".join(out + [nav(CONTESTS), "", "Nothing filed yet — `make contest` "
+                                "lists the latest contests, and `make misc` files a "
+                                "problem on its own.", ""])
 
     def sat(c: str) -> str:  # the day it was sat; any one file's @contest says
         return min((a.date for a in by_contest[c] if a.date), default="")
@@ -833,49 +882,65 @@ def emit_contests(attempts: list[Attempt]) -> str:
         return int(CONTEST_DIR.match(c).group(2))
 
     order = sorted(by_contest, key=lambda c: (sat(c), number(c)), reverse=True)
-    judged = [a for a in attempts if a.verdict and not a.verdict.error]
-    passed = sum(a.verdict.passed for a in judged)
-    upsolved = sum(a.verdict.upsolved for a in judged)
-    owed = [a for a in judged if not a.verdict.solved]
+    in_window = [a for c in order for a in by_contest[c]]
+    passed = sum(1 for a in in_window if a.verdict and not a.verdict.error
+                 and a.verdict.passed)
+    owed = [a for a in attempts if a.owed]
     starred = [a for a in attempts if a.star]
 
-    out += [f"**{plural(len(by_contest), 'contest')}** · {passed} of "
-            f"{plural(len(attempts), 'problem')} solved in the window · "
-            f"{upsolved} upsolved since", "", nav(CONTESTS), "",
-            "✓ solved in the window · `(2)` after that many wrong submissions · "
-            "✗ not solved · ↻ solved after the window · ⭐ starred", ""]
+    bits = []
+    if by_contest:
+        bits.append(f"**{plural(len(by_contest), 'contest')}** · {passed} of "
+                    f"{plural(len(in_window), 'problem')} solved in the window")
+    if misc:
+        bits.append(f"**{plural(len(misc), 'standalone problem')}**")
+    bits.append(f"{sum(a.upsolved for a in attempts)} upsolved")
+    out += [" · ".join(bits), "", nav(CONTESTS), "",
+            "✓ solved · `(2)` after that many wrong submissions · ✗ missed · "
+            "↻ missed, and upsolved since · ⭐ starred", ""]
 
-    width = max([4] + [a.q for a in attempts if a.q])
-    qs = range(1, width + 1)
-    out += ["| Contest | Date | " + " | ".join(f"Q{q}" for q in qs) + " | Solved |",
-            "|---|---|" + "---|" * width + "---|"]
-    for c in order:
-        row = by_contest[c]
-        cells = {a.q: a.cell for a in row if a.q}
-        solved = [a for a in row if a.verdict and not a.verdict.error and a.verdict.passed]
-        out.append(f"| [{contest_name(c)}]({contest_url(c)}) | {sat(c)} | "
-                   + " | ".join(cells.get(q, "") for q in qs)
-                   + f" | {len(solved)}/{len(row)} |")
-    out.append("")
+    if by_contest:
+        width = max([4] + [a.q for a in in_window if a.q])
+        qs = range(1, width + 1)
+        out += ["| Contest | Date | " + " | ".join(f"Q{q}" for q in qs) + " | Solved |",
+                "|---|---|" + "---|" * width + "---|"]
+        for c in order:
+            row = by_contest[c]
+            cells = {a.q: a.cell for a in row if a.q}
+            solved = sum(1 for a in row if a.verdict and not a.verdict.error
+                         and a.verdict.passed)
+            out.append(f"| [{contest_name(c)}]({contest_url(c)}) | {sat(c)} | "
+                       + " | ".join(cells.get(q, "") for q in qs)
+                       + f" | {solved}/{len(row)} |")
+        out.append("")
+
+    rank = {c: i for i, c in enumerate(order + [MISC])}
 
     def listing(rows: list[Attempt], starred: bool) -> list[str]:
         """The starred list drops the star it would print on every row, and
         gains the result, since that is half of why it was starred."""
-        rank = {c: i for i, c in enumerate(order)}
-        rows = sorted(rows, key=lambda a: (rank[a.contest], a.q or 0))
-        head = ["| Contest | Problem | Diff | Patterns |" + (" Result |" if starred else ""),
+        rows = sorted(rows, key=lambda a: (rank[a.contest], a.q or 0,
+                                           RANK.get(a.difficulty, 9), a.id))
+        head = ["| Where | Problem | Diff | Patterns |" + (" Result |" if starred else ""),
                 "|---|---|---|---|" + ("---|" if starred else "")]
         return head + [
             f"| {a.where} | {f'[{a.title}]({a.link})' if starred else a.name} "
             f"| {a.difficulty} | {', '.join(a.patterns)} |"
             + (f" {a.result} |" if starred else "") for a in rows] + [""]
 
+    if misc:
+        out += [f"## Misc <sub>{len(misc)}</sub>", "",
+                "Solved on their own rather than in a contest, easiest first.", "",
+                "| # | Problem | Diff | Patterns | Result |", "|---|---|---|---|---|"]
+        for a in sorted(misc, key=lambda a: (RANK.get(a.difficulty, 9), a.id)):
+            out.append(f"| {a.id} | {a.name} | {a.difficulty} "
+                       f"| {', '.join(a.patterns)} | {a.result} |")
+        out.append("")
     if owed:
         out += [f"## Upsolve <sub>{len(owed)}</sub>", "",
-                "Not solved in the window, and not since. Solving one means "
-                "appending `upsolved` to its verdict, which takes it off this list "
-                "and turns its ✗ above to ↻ — Solved counts only the window, so it "
-                "stays as it was.", ""]
+                "Missed, and not solved since. Writing the solution into the file is "
+                "the upsolve: its ✗ turns to ↻ and it leaves this list, while the "
+                "verdict goes on saying what happened on the day.", ""]
         out += listing(owed, starred=False)
     if starred:
         out += [f"## Starred <sub>{len(starred)}</sub>", "",
@@ -929,7 +994,7 @@ def emit_issues(entries: list[Entry | Attempt], warnings: list[str],
                 "judge expects. Worth an extra look before submitting.", "",
                 "| # | Problem | Where |", "|---|---|---|"]
         for e in sorted(unchecked, key=lambda e: (RANK.get(e.difficulty, 9), e.id)):
-            out.append(f"| {e.id} | [{e.title}]({e.link}) | {e.where} |")
+            out.append(f"| {e.id} | [{e.title}]({e.href}) | {e.where} |")
         out.append("")
 
     if warnings:
@@ -939,7 +1004,7 @@ def emit_issues(entries: list[Entry | Attempt], warnings: list[str],
         out += ["## Not yet checked", "",
                 f"{plural(len(pending), 'problem')} whose signature has not been "
                 "looked up yet; `make sync` resolves them.", ""]
-        out += [f"- [{e.title}]({e.link}) ({e.id})" for e in
+        out += [f"- [{e.title}]({e.href}) ({e.id})" for e in
                 sorted(pending, key=lambda e: e.id)] + [""]
     return "\n".join(out), count
 
@@ -959,8 +1024,9 @@ def main(failures: list[str] | None = None) -> int:
         path.write_text(text + "\n", encoding="utf-8", newline="\n")
     for msg in warnings:
         print(f"warning: {msg}", file=sys.stderr)
-    contests = len({a.contest for a in attempts})
-    print(f"wrote TOC.md, STAR.md, SOLUTIONS.md, OPTIMAL.md, CONTESTS.md, ISSUES.md "
+    contests = len({a.contest for a in attempts} - {MISC})
+    print(f"wrote neetcode/{{TOC,STAR,SOLUTIONS,OPTIMAL}}.md, contests/CONTESTS.md, "
+          f"ISSUES.md "
           f"({plural(len(entries), 'problem')} solved"
           + (f", {n_weak} not optimal" if n_weak else "")
           + (f", {plural(contests, 'contest')}" if contests else "")

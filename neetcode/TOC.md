@@ -4,7 +4,7 @@
 
 **1 problem** · 2 solutions · Easy 1
 
-Index · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](CONTESTS.md) · [Issues](ISSUES.md)
+NeetCode · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
 
 **Opt** · ✓ an optimal solution is here · [·](OPTIMAL.md) not one yet
 
@@ -12,5 +12,5 @@ Index · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md
 
 | # | Problem | Diff | Opt |
 |---|---|---|---|
-| 217 | [Contains Duplicate](neetcode/01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | Easy | ✓ |
+| 217 | [Contains Duplicate](01-arrays-hashing/0217-contains-duplicate.cpp) ⭐ | Easy | ✓ |
 

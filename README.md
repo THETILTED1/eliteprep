@@ -9,56 +9,65 @@ the only thing you maintain is the code you wrote.
 
 You enter a problem by its title, from LeetCode or from neetcode.io, whichever
 you happen to be looking at. Everything else is derived: the id, the slug, the
-difficulty, the filename and the topic it belongs under. Nothing about a
-problem is typed by hand and nothing is looked up twice.
-
-`neetcode/01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example. Delete it
-whenever you like; the tooling does not depend on it.
+difficulty, the filename and where it belongs. Nothing about a problem is typed
+by hand and nothing is looked up twice.
 
 **C++ only.** The validation that makes this worth using — that a solution
 declares the class and methods the judge expects — reads LeetCode's own C++
 starter snippet, so it has nothing to check against in another language.
 
-Generated indexes, all built from the solved files alone:
+## Two sections
+
+Problems live in one of two trees, each with its own README and its own indexes
+beside it. The tool at the root serves both.
 
 | | |
 |---|---|
-| **[TOC.md](TOC.md)** | every solved problem, broken down by topic |
-| **[STAR.md](STAR.md)** | the starred subset, same breakdown |
-| **[SOLUTIONS.md](SOLUTIONS.md)** | problems that earned more than one approach, side by side |
-| **[OPTIMAL.md](OPTIMAL.md)** | what is not optimal, grouped by the axis it falls short on |
-| **[CONTESTS.md](CONTESTS.md)** | every contest sat, one row each, and what is still owed — see [Contests](#contests) |
-| **[ISSUES.md](ISSUES.md)** | anything that did not fully process, so it is not lost in scrollback |
+| **[neetcode/](neetcode/README.md)** | the NeetCode 250 and nothing else, filed by NeetCode's eighteen topics, with several approaches to a problem kept side by side |
+| **[contests/](contests/README.md)** | LeetCode contests, a directory each, and problems met anywhere else in `misc/` — one solution apiece, for volume |
 
-Everything is ordered by ascending difficulty, then by problem number — except
-CONTESTS.md, which is a log, and runs newest first.
+    neetcode/   README.md  TOC.md  STAR.md  SOLUTIONS.md  OPTIMAL.md  01-arrays-hashing/ …
+    contests/   README.md  CONTESTS.md  biweekly-190/ …  misc/
 
-ISSUES.md is the one to check after a batch of inserts. It collects files that
-failed validation, index warnings, and — the case you cannot see otherwise —
-problems whose class and method names **were never verified**, because LeetCode
-publishes no C++ starter for its premium problems. Seven of the NeetCode 150 are
-premium, so this is not a corner case. It says "Nothing to report" when clean.
+The split is the point. The topics are a roadmap: a curated set, each problem
+filed where it teaches something. Contest problems are whatever four LeetCode
+set that week, and filing them among the topics would bury the roadmap under
+volume. So `make insert` takes NeetCode's problems alone, and everything else
+goes to `contests/`.
 
-`make search` writes `search.md`. With no `PATTERN` it lists every pattern in use, commonest first, with the problems under each — the answer to "search for what?", and the quickest way to catch `two pointers` and `two-pointers` having both crept in. With one
-(`make search PATTERN="hashing, two pointers"`) it writes: every solution
-whose `@patterns` match, with difficulty and complexity, easiest first. Matching
-is case-insensitive and by substring, so `sort` finds `sorting`, and the terms
-are a union. A miss lists every pattern you have actually used, which is a quick
-way to catch your vocabulary drifting. The file is scratch and gitignored.
+Three things cross both trees, and so live here at the root.
 
-TOC.md is the cover-all and carries nothing but the topic breakdown, so it stays
-readable at a hundred problems. Neither it nor STAR.md lists solutions — that
-comparison is the whole content of SOLUTIONS.md, where each approach gets its
-complexity split into aligned Time and Space columns. None of this is a
-checklist of the 150; NeetCode's own site is the better roadmap for what is
-left.
+`make sync` re-validates and tidies every file in both, each by its own rules,
+then rebuilds every index.
+
+[ISSUES.md](ISSUES.md) is the one to check after a batch of work. It collects
+files that failed validation, in either tree, index warnings, and — the case you
+cannot see otherwise — problems whose class and method names **were never
+verified**, because LeetCode publishes no C++ starter for its premium problems.
+Seven of the NeetCode 150 are premium, so this is not a corner case. It says
+"Nothing to report" when clean.
+
+`make search` writes `search.md`. With no `PATTERN` it lists every pattern in
+use, commonest first, with the problems under each — the answer to "search for
+what?", and the quickest way to catch `two pointers` and `two-pointers` having
+both crept in. With one (`make search PATTERN="hashing, two pointers"`) it
+writes every solution whose `@patterns` match, with difficulty and complexity,
+easiest first. Matching is case-insensitive and by substring, so `sort` finds
+`sorting`, and the terms are a union. A miss lists every pattern you have
+actually used, which is a quick way to catch your vocabulary drifting. Both
+trees are searched, from the one shared `@patterns` vocabulary: NeetCode matches
+first, contest matches beneath them in a section of their own. The file is
+scratch and gitignored.
+
+`neetcode/01-arrays-hashing/0217-contains-duplicate.cpp` is a worked example.
+Delete it whenever you like; the tooling does not depend on it.
 
 ## Keeping your solutions private
 
 The tool is worth publishing; your solutions probably are not. Keep two repos.
 
 **Public** — this one: `tools/`, `Makefile`, `template.cpp`, `.clang-format`,
-`.clangd`, `.vscode/`, the README and one example. Mark it a template
+`.clangd`, `.vscode/`, the three READMEs and one example. Mark it a template
 repository on GitHub so anyone can press *Use this template* and get their own
 copy, private if they want.
 
@@ -72,256 +81,19 @@ copy, private if they want.
 
 Take later tool changes with `git pull upstream main`. This stays quiet because
 the two sides occupy disjoint paths — the tool is `tools/`, `Makefile`,
-`template.cpp`, `.clang-format`, `.clangd` and `.vscode/`; your work is `neetcode/`
-and `contests/` — so there is nothing to collide. The exception is the generated
-indexes, which both sides rewrite. They are derived, so take yours and rebuild
-rather than merging:
+`template.cpp`, `.clang-format`, `.clangd`, `.vscode/` and the READMEs; your
+work is the problems under `neetcode/` and `contests/` — so there is nothing to
+collide. The exception is the generated indexes, which both sides rewrite. They
+are derived, so take yours and rebuild rather than merging:
 
-    git checkout --ours TOC.md STAR.md SOLUTIONS.md OPTIMAL.md CONTESTS.md ISSUES.md
+    git checkout --ours neetcode/TOC.md neetcode/STAR.md neetcode/SOLUTIONS.md \
+        neetcode/OPTIMAL.md contests/CONTESTS.md ISSUES.md
     make sync
 
 Develop the tool in the public repo rather than the private one, and the flow
 stays one-directional. `tools/signatures.json` is gitignored for the same
 reason — it grows one entry per problem you file, so it would diverge
 immediately, and it is refetched on demand.
-
-## Workflow
-
-    make new                          # input.cpp, from template.cpp
-    $EDITOR input.cpp                 # fill in @title and the rest
-    make insert
-
-Editing a file that is already filed — correcting a complexity, adding a third
-solution — needs `make sync`. It re-validates every filed problem against the
-same rules, then tidies the ones that pass where they sit: `@title` and
-`@related` restamped to handles, the code clang-formatted. A file that fails
-validation is reported and left untouched, so nothing is rewritten out from
-under a mistake. Nothing moves between topics either — that is `insert`'s job,
-with `TOPIC=`. The indexes are only ever generated, so nothing hand-written
-survives in them.
-
-`SRC` defaults to `input.cpp`. `TOPIC` is required only for problems outside
-the NeetCode 250; within it the topic is inferred:
-
-    make insert SRC=other.cpp TOPIC=arrays-hashing
-
-`@title` takes the problem's **title**, as displayed on either site — the
-heading, or the entry in the left sidebar. So does `@related`, comma-separated.
-Nothing else is expected of you: `insert` resolves what you typed and stamps
-the canonical handle back down, so what ends up stored never depends on which
-site you happened to be reading.
-
-    // @title contains duplicate         ->  // @title 0217-contains-duplicate [Easy]
-    // @related valid anagram, two sum   ->  // @related 0242-valid-anagram, 0001-two-sum
-
-You type titles; the file keeps handles. Reading a handle back is a structural
-decomposition of a field insert wrote — the slug half still goes through the
-one transform, and the id half is checked against what that returns rather than
-trusted, so `0242-contains-duplicate` is rejected as inconsistent.
-
-The file then moves to `neetcode/01-arrays-hashing/0217-contains-duplicate.cpp` and
-`TOC.md` is regenerated. `template.cpp` carries a second solution block; fill
-it in or delete it, and if you leave it untouched `insert` drops it for you.
-Re-running `insert` on an already-filed problem is safe — the canonical header
-resolves to itself — so it doubles as a reformatter.
-
-Re-inserting a problem overwrites whatever was filed under that handle before,
-including moving it if you corrected `TOPIC`.
-
-### Every tag must be filled
-
-A draft is rejected unless all of these hold, and **every** failure is reported
-at once rather than one at a time:
-
-- exactly one `@title`, naming a problem that resolves, not still `{{problem}}`
-- exactly one `@star`, reading `yes` or `no`
-- exactly one `@related`, comma-separated; each entry must resolve, and an
-  empty list is fine
-- at least one solution block
-- every solution has exactly one `@optimal`, reading `yes` or `no` plus the
-  axis that beats it, `@patterns`
-  (comma-separated), a complexity on `@solution`, and a class body
-- exactly one `@primary` across the file
-- every solution declares LeetCode's own class name and defines all of its
-  methods, so the file is a drop-in paste back into the judge
-
-The one exception is a second solution block left exactly as the template wrote
-it — that is dropped rather than rejected, so an unused block costs nothing.
-Fill in any part of it and it must then be complete.
-
-An unknown `TOPIC`, or a problem outside the 250 with no `TOPIC`, are likewise
-errors. Nothing moves unless every check passes.
-
-Every problem must live in one of the 18 topic directories, or in a contest's —
-there is no default bucket and no fallback. A source file anywhere else is
-reported by `make sync`, since it would otherwise be indexed nowhere.
-
-## Contests
-
-The topics are a roadmap: a curated set, each problem filed where it teaches
-something. Contest problems are the opposite — whatever four LeetCode set that
-week — and filing them under the topics would bury the roadmap under volume.
-So they live apart, one directory per contest, and touch nothing but their own
-index and `make search`:
-
-    make contest                          # the latest contests, and which are done
-    make contest C=biweekly-190           # a draft per question
-    $EDITOR contests/biweekly-190/*.cpp   # paste, then fill in three tags
-    make sync
-
-`C=` is the contest as LeetCode numbers it, `weekly-N` or `biweekly-N`. The
-question list comes from LeetCode's GraphQL endpoint, which answers without
-logging in, and each title then goes through the same manifest as everything
-else, so the files are named and stamped as a filed solution would be — down to
-LeetCode's own C++ starter as the body, ready to write in or paste over:
-
-```cpp
-// @title 4034-minimum-bishop-moves-to-reach-target [Medium]   <- written for you
-// @contest biweekly-190 Q1 2026-10-05                         <- written for you
-
-// @verdict subs 1 pass
-// @star no
-// @patterns math, parity
-
-class Solution { ... };
-```
-
-`DATE=` sets the day on `@contest` when it is not today. A file that already
-exists is never touched, so `make contest` can be rerun safely.
-
-**One solution per file.** The point of contests is volume, so there are no
-`@solution` blocks, and no `@optimal`, `@primary` or `@related` — a contest
-file carries those five tags and nothing else, and `make sync` says so if one
-from a topic file finds its way in. It is otherwise held to the same bargain:
-every tag filled, all failures reported at once, LeetCode's class and methods
-present and declared once.
-
-**`@verdict` is what happened in the window**, in LeetCode's own terms:
-
-    // @verdict subs 1 pass             accepted first time
-    // @verdict subs 3 pass             two wrong answers, then accepted
-    // @verdict subs 1 fail             not solved in the 90 minutes
-    // @verdict subs 0 fail upsolved    not even submitted, but solved since
-
-`subs` counts every submission, the accepted one included. There is no clock:
-the count is what you remember afterwards, and a time nobody noted down when it
-happened is one that gets made up later.
-
-A fail stays a fail. Solving it later appends `upsolved` instead of rewriting
-the result, so what a contest's row says about the day never changes after
-it. Until then the stub may stay empty and `@patterns` blank — that is what
-puts a problem on the upsolve list rather than in ISSUES.md.
-
-[CONTESTS.md](CONTESTS.md) is one row per contest, newest first, with a cell per
-question — `✓` solved in the window, `✓ (2)` after two wrong answers, `✗` not
-solved, `↻` once upsolved — and how many of the four fell inside the 90 minutes.
-Below the table, the upsolve list and the starred problems.
-
-`make search` covers both: topic matches first, contest matches beneath them in
-a section of their own, from the one shared `@patterns` vocabulary.
-
-## Layout
-
-    neetcode/NN-topic-name/LLLL-problem-slug.cpp
-    contests/biweekly-N/LLLL-problem-slug.cpp     (see Contests, above)
-
-The eighteen topic directories live under `neetcode/`, which keeps the repository
-front page to the tool and the indexes. They are NeetCode's roadmap topics,
-prefixed `01`–`18` in its order, which is pedagogical rather than alphabetical. The 18 topics are kept because they are a
-*single-label* partition — every problem has exactly one home — which is what a
-directory tree needs. LeetCode's own tags are not: across the NeetCode 250 they
-average 3.7 tags per problem, only 6 problems carry a single tag, and the most
-common tag (`array`, on 141 of 250) partitions nothing. Those tags are a
-cross-cutting label, which is all `@patterns` claims to be. Files are named by zero-padded LeetCode
-id plus LeetCode title slug. LeetCode ids are permanent — never changed, never
-reused — so the handle is stable, sorts correctly, and reads as a name:
-`0217-contains-duplicate`. That is also how `@related` refers to problems.
-
-## Annotations
-
-Identity is never typed by hand. Title, difficulty and topic come from the
-manifest; id and slug come from the filename. A source file carries only what
-is yours:
-
-```cpp
-// 0217-contains-duplicate [Easy]  <- written by insert
-
-// @title 0217-contains-duplicate [Easy]   <- stamped by insert from a title
-// @star yes                     <- yes or no; flags it as interesting
-
-// @optimal no time O(N)         <- yes, or no and what beats it
-// @patterns hashing, sorting    <- comma-separated; labels this solution
-// @solution O(N) time O(N) space
-// @primary                      <- bare; at most one per file
-//
-class Solution { ... };
-
-// @related 0242-valid-anagram, 0049-group-anagrams   <- stamped likewise
-```
-
-Comment blocks are grouped by blank lines. A group containing `@solution`
-describes the class beneath it; `@star` and `@related` are file-level wherever
-they appear, and the template puts `@related` at the foot of the file, where a
-"see also" belongs. Both `@title` and `@related` are entered as titles and
-stored as handles, so `contains-duplicate, GROUP ANAGRAMS` is filed as
-`0217-contains-duplicate, 0049-group-anagrams`. Solutions are labelled by their `@patterns`, not by class name, so every class
-in a file carries the *same* name — LeetCode's — and that is enforced. Nothing
-is compiled, so the redefinition costs nothing here; it is
-[the editor](#editor-support) that has to be told what to make of it.
-
-The class and method names come from LeetCode's own C++ starter snippet,
-fetched once per problem and cached in `tools/signatures.json`. A solution
-pasted from LeetCode passes by construction; one written on neetcode.io has to
-be translated, because NeetCode renames methods — `hasDuplicate` there is
-`containsDuplicate` on LeetCode. Design problems must implement the whole
-interface: `min-stack` requires `class MinStack` with `push`, `pop`, `top` and
-`getMin`.
-
-`@optimal` sits just below every `@solution` and is required like the rest.
-Tag order inside a block is not enforced, so it still parses if you write it
-above. It reads `yes`, or `no` followed by the axis it falls short on:
-
-    // @optimal yes
-    // @optimal no time O(N)          <- a better bound exists, and this is it
-    // @optimal no style              <- complexity is optimal; the writing is not
-    // @optimal no space O(1) style   <- more than one axis is owed
-
-`time` and `space` carry the bound that beats them; `style` carries nothing,
-because there is no notation for "shorter than this". Naming the axis is the
-same rule that made `@optimal` mandatory in the first place: a bare `no` records
-that you were unhappy without recording what would fix it, which is the half
-worth keeping. So a bare `no` is rejected.
-
-[OPTIMAL.md](OPTIMAL.md) collects the problems where **no** solution is marked
-`yes`, one section per axis, with the bound it has beside the bound that beats
-it. A solution owing two axes appears under both — the time debt and the style
-debt are different jobs, done on different days.
-
-Any, not every. A `no` sitting beside a `yes` on the same problem is an
-alternative that was kept — the O(N log N) sort next to the O(N) hash set,
-there because it teaches something or trades time for space — and it does not
-put the problem back in the queue. Once the best answer is written down the
-problem is done, and comparing the approaches is what
-[SOLUTIONS.md](SOLUTIONS.md) is for. So TOC.md's `Opt` column reads `✓` when an
-optimal solution is present and `·` when there is not one yet.
-
-It is deliberately your call. Neither site publishes the optimal complexity in
-any form a script can read: NeetCode's bundle carries none, its API is behind
-authentication, and LeetCode keeps complexity in the editorial, which is
-`paidOnly`. Judging your own is the only honest option.
-
-Multiple approaches live in one file so a problem stays one unit. `@solution`
-count is what surfaces a problem in [SOLUTIONS.md](SOLUTIONS.md), so that index
-builds itself.
-
-`@patterns` labels an approach rather than filing it: it is what names the row
-in SOLUTIONS.md. There is deliberately no index of every problem by pattern —
-the labels overlap the topics unevenly (`hashing` is a subset of Arrays &
-Hashing, `sorting` corresponds to no topic at all), so such a list would sort
-poorly and read worse than the topic breakdown it duplicates.
-
-Files are paste-ready — no includes, no `using namespace std`, and no `std::`
-qualification — matching what the judge hands you.
 
 ## Formatting
 

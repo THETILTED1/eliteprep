@@ -4,6 +4,7 @@
     make contest                          # the latest contests, and which are done
     make contest C=biweekly-190           # contests/biweekly-190/, a draft apiece
     make contest C=weekly-470 DATE=2026-10-04
+    make misc TITLE="two sum"             # one problem on its own, in contests/misc/
 
 C= is the contest as LeetCode numbers it, weekly-N or biweekly-N. Its question
 list comes from LeetCode's GraphQL endpoint, which answers without logging in,
@@ -12,25 +13,32 @@ contest file is named and stamped exactly as a filed solution would be:
 
     contests/biweekly-190/3xxx-minimum-bishop-moves-to-reach-target.cpp
 
-    // @title 3xxx-minimum-bishop-moves-to-reach-target [Medium]
+    // @title 4034-minimum-bishop-moves-to-reach-target [Medium]
     // @contest biweekly-190 Q1 2026-10-05
 
     // @verdict
+    // @solution
     // @star
     // @patterns
 
     class Solution { ... LeetCode's own C++ starter ... };
 
-@title and @contest are written for you. The three below them are yours, and
-`make sync` holds them to the same every-tag-filled rule as a topic file:
+@title and @contest are written for you. The four below them are yours, and
+`make sync` holds them to the same every-tag-filled rule as a NeetCode file:
 
     // @verdict subs 1 pass             accepted first time
     // @verdict subs 3 pass             two wrong, then accepted
     // @verdict subs 1 fail             not solved in the window
-    // @verdict subs 0 fail upsolved    not even submitted, but solved since
+    // @solution O(N log N) time O(1) space
+
+A miss keeps its fail. Writing its solution into the file is the upsolve.
 
 DATE= is the day the contest was sat, today unless given. A file that already
 exists is never touched, so running it again only fills in what is missing.
+
+`make misc` is the same for a problem solved on its own: the same tags, with
+`@contest misc`, and @verdict saying whether you got there unaided. A NeetCode
+problem is refused — it belongs in neetcode/, through make new and make insert.
 """
 
 from __future__ import annotations
@@ -54,9 +62,10 @@ LC_CONTEST = re.compile(r"^(weekly|biweekly)-contest-(\d+)$")
 
 DRAFT = """\
 // @title {handle} [{difficulty}]
-// @contest {contest} Q{q} {sat}
+// @contest {placement}
 
 // @verdict
+// @solution
 // @star
 // @patterns
 
@@ -112,20 +121,40 @@ def start(contest: str, sat: str) -> int:
         if dest.exists():
             print(f"  Q{q} kept     {shown}")
             continue
-        text = DRAFT.format(handle=manifest.handle(problem),
-                            difficulty=problem["difficulty"], contest=contest,
-                            q=q, sat=sat, code=starter(problem["slug"]))
-        folder.mkdir(parents=True, exist_ok=True)
-        dest.write_text(text, encoding="utf-8", newline="\n")
+        draft(dest, problem, f"{contest} Q{q} {sat}")
         print(f"  Q{q} {problem['difficulty']:<8} {shown}")
         written += 1
 
     if written:
-        print(f"wrote {gen_toc.plural(written, 'draft')} — fill in @verdict, @star "
-              "and @patterns, then: make sync")
+        print(f"wrote {gen_toc.plural(written, 'draft')} — fill in @verdict, "
+              "@solution, @star and @patterns, then: make sync")
     else:
         print(f"nothing to do — every question of {contest} is already filed")
     return 0
+
+
+def misc(title: str) -> int:
+    """One problem, solved on its own, into contests/misc/."""
+    problem = manifest.resolve(title, sync=True)
+    if problem.get("in_neetcode"):
+        raise ContestError(f"{manifest.handle(problem)} is a NeetCode problem, so it "
+                           "belongs in neetcode/ — make new, then make insert")
+    dest = gen_toc.CONTEST_SRC / gen_toc.MISC / f"{manifest.handle(problem)}.cpp"
+    shown = dest.relative_to(gen_toc.ROOT)
+    if dest.exists():
+        print(f"nothing to do — {shown} is already filed")
+        return 0
+    draft(dest, problem, gen_toc.MISC)
+    print(f"wrote {shown} ({problem['difficulty']}) — fill in @verdict, @solution, "
+          "@star and @patterns, then: make sync")
+    return 0
+
+
+def draft(dest: Path, problem: dict, placement: str) -> None:
+    text = DRAFT.format(handle=manifest.handle(problem), difficulty=problem["difficulty"],
+                        placement=placement, code=starter(problem["slug"]))
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(text, encoding="utf-8", newline="\n")
 
 
 def latest(n: int = 12) -> int:
@@ -149,12 +178,23 @@ def latest(n: int = 12) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("contest", nargs="?", help="weekly-N or biweekly-N")
+    ap.add_argument("contest", nargs="?", help="weekly-N, biweekly-N, or misc")
     ap.add_argument("--date", help="the day it was sat, YYYY-MM-DD; today by default")
+    ap.add_argument("--title", help="with misc: the problem, by its title")
     args = ap.parse_args()
 
     if not args.contest:
         return latest()
+    if args.contest == gen_toc.MISC:
+        if not (args.title or "").strip():
+            print("error: make misc takes TITLE=, the problem's title as LeetCode "
+                  "shows it", file=sys.stderr)
+            return 1
+        try:
+            return misc(args.title)
+        except (ContestError, manifest.Unresolved) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
     if not gen_toc.CONTEST_DIR.match(args.contest):
         print(f"error: C= takes weekly-N or biweekly-N, e.g. biweekly-190 — "
               f"not {args.contest!r}", file=sys.stderr)

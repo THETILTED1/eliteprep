@@ -4,7 +4,7 @@
 
 **1 problem** worth coming back to.
 
-[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](CONTESTS.md) · [Issues](ISSUES.md)
+[NeetCode](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
 
 **Opt** · ✓ an optimal solution is here · [·](OPTIMAL.md) not one yet
 
@@ -12,5 +12,5 @@
 
 | # | Problem | Diff | Opt |
 |---|---|---|---|
-| 217 | [Contains Duplicate](neetcode/01-arrays-hashing/0217-contains-duplicate.cpp) | Easy | ✓ |
+| 217 | [Contains Duplicate](01-arrays-hashing/0217-contains-duplicate.cpp) | Easy | ✓ |
 
