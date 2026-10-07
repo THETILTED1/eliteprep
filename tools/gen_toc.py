@@ -9,6 +9,8 @@ Each section keeps its own, beside its problems:
     neetcode/OPTIMAL.md    what is not optimal, by the axis it falls short on
     contests/CONTESTS.md   a row per contest, the standalone problems, and what
                            is still owed
+    contests/STAR.md       the starred contest and standalone problems
+    contests/SOLUTIONS.md  every solution written, its approach and complexity
 
 Two cross both sections, and so sit at the root:
 
@@ -70,6 +72,8 @@ STAR = NEETCODE_SRC / "STAR.md"
 SOLUTIONS = NEETCODE_SRC / "SOLUTIONS.md"
 OPTIMAL = NEETCODE_SRC / "OPTIMAL.md"
 CONTESTS = CONTEST_SRC / "CONTESTS.md"
+CONTEST_STAR = CONTEST_SRC / "STAR.md"
+CONTEST_SOLUTIONS = CONTEST_SRC / "SOLUTIONS.md"
 ISSUES = ROOT / "ISSUES.md"
 SEARCH = ROOT / "search.md"   # scratch output of `make search`, gitignored
 
@@ -594,13 +598,27 @@ def relative(target: Path, page: Path) -> str:
     return Path(os.path.relpath(target, page.parent)).as_posix()
 
 
+# Each section's nav names its own pages, then the other section by its index
+# and ISSUES.md. A page at the root, where ISSUES.md and search.md sit, names the
+# two sections and ISSUES.md.
+NAV = {
+    NEETCODE_SRC: [(TOC, "Index"), (STAR, "Starred"), (SOLUTIONS, "Solutions"),
+                   (OPTIMAL, "Optimal")],
+    CONTEST_SRC: [(CONTESTS, "Contests"), (CONTEST_STAR, "Starred"),
+                  (CONTEST_SOLUTIONS, "Solutions")],
+    ROOT: [(TOC, "NeetCode"), (CONTESTS, "Contests"), (ISSUES, "Issues")],
+}
+
+
 def nav(current: Path) -> str:
-    pages = [(TOC, "NeetCode"), (STAR, "Starred"), (SOLUTIONS, "Solutions"),
-             (OPTIMAL, "Optimal"), (CONTESTS, "Contests"), (ISSUES, "Issues")]
-    return " · ".join(
-        label if page == current else f"[{label}]({relative(page, current)})"
-        for page, label in pages
-    )
+    def link(page: Path, label: str) -> str:
+        return label if page == current else f"[{label}]({relative(page, current)})"
+
+    here = NAV[current.parent]
+    away = [(page, label) for page, label in NAV[ROOT]
+            if page.parent != current.parent and current.parent != ROOT]
+    return (" · ".join(link(*x) for x in here)
+            + (" | " + " · ".join(link(*x) for x in away) if away else ""))
 
 
 def topic_tables(entries: list[Entry], out: list[str], star: bool = True) -> None:
@@ -878,15 +896,11 @@ def emit_contests(attempts: list[Attempt]) -> str:
     def sat(c: str) -> str:  # the day it was sat; any one file's @contest says
         return min((a.date for a in by_contest[c] if a.date), default="")
 
-    def number(c: str) -> int:
-        return int(CONTEST_DIR.match(c).group(2))
-
-    order = sorted(by_contest, key=lambda c: (sat(c), number(c)), reverse=True)
+    order = contest_order(attempts)
     in_window = [a for c in order for a in by_contest[c]]
     passed = sum(1 for a in in_window if a.verdict and not a.verdict.error
                  and a.verdict.passed)
     owed = [a for a in attempts if a.owed]
-    starred = [a for a in attempts if a.star]
 
     bits = []
     if by_contest:
@@ -914,20 +928,6 @@ def emit_contests(attempts: list[Attempt]) -> str:
                        + f" | {solved}/{len(row)} |")
         out.append("")
 
-    rank = {c: i for i, c in enumerate(order + [MISC])}
-
-    def listing(rows: list[Attempt], starred: bool) -> list[str]:
-        """The starred list drops the star it would print on every row, and
-        gains the result, since that is half of why it was starred."""
-        rows = sorted(rows, key=lambda a: (rank[a.contest], a.q or 0,
-                                           RANK.get(a.difficulty, 9), a.id))
-        head = ["| Where | Problem | Diff | Patterns |" + (" Result |" if starred else ""),
-                "|---|---|---|---|" + ("---|" if starred else "")]
-        return head + [
-            f"| {a.where} | {f'[{a.title}]({a.link})' if starred else a.name} "
-            f"| {a.difficulty} | {', '.join(a.patterns)} |"
-            + (f" {a.result} |" if starred else "") for a in rows] + [""]
-
     if misc:
         out += [f"## Misc <sub>{len(misc)}</sub>", "",
                 "Solved on their own rather than in a contest, easiest first.", "",
@@ -941,12 +941,70 @@ def emit_contests(attempts: list[Attempt]) -> str:
                 "Missed, and not solved since. Writing the solution into the file is "
                 "the upsolve: its ✗ turns to ↻ and it leaves this list, while the "
                 "verdict goes on saying what happened on the day.", ""]
-        out += listing(owed, starred=False)
-    if starred:
-        out += [f"## Starred <sub>{len(starred)}</sub>", "",
-                "Worth coming back to.", ""]
-        out += listing(starred, starred=True)
+        out += ["| Where | Problem | Diff |", "|---|---|---|"]
+        out += [f"| {a.where} | {a.name} | {a.difficulty} |"
+                for a in by_log(owed, order)] + [""]
     return "\n".join(out)
+
+
+def contest_order(attempts: list[Attempt]) -> list[str]:
+    """The contests attempted, newest first — the order of CONTESTS.md's rows."""
+    sat: dict[str, str] = {}
+    for a in attempts:
+        if a.contest != MISC and a.date:
+            sat[a.contest] = min(sat.get(a.contest, a.date), a.date)
+
+    def number(c: str) -> int:
+        return int(CONTEST_DIR.match(c).group(2))
+
+    contests = {a.contest for a in attempts} - {MISC}
+    return sorted(contests, key=lambda c: (sat.get(c, ""), number(c)), reverse=True)
+
+
+def by_log(rows: list[Attempt], order: list[str]) -> list[Attempt]:
+    """As CONTESTS.md reads: newest contest first, by question, then misc/."""
+    rank = {c: i for i, c in enumerate(order + [MISC])}
+    return sorted(rows, key=lambda a: (rank[a.contest], a.q or 0,
+                                       RANK.get(a.difficulty, 9), a.id))
+
+
+def emit_contest_star(attempts: list[Attempt]) -> str:
+    """The starred problems, contest and standalone alike, as the log orders them."""
+    starred = [a for a in attempts if a.star]
+    out = ["# Starred", "", GENERATED, ""]
+    if not starred:
+        return "\n".join(out + [nav(CONTEST_STAR), "", "Nothing starred yet.", ""])
+    out += [f"**{plural(len(starred), 'problem')}** worth coming back to.", "",
+            nav(CONTEST_STAR), "",
+            "| Where | Problem | Diff | Patterns | Result |", "|---|---|---|---|---|"]
+    out += [f"| {a.where} | [{a.title}]({a.link}) | {a.difficulty} "
+            f"| {', '.join(a.patterns)} | {a.result} |"
+            for a in by_log(starred, contest_order(attempts))]
+    return "\n".join(out + [""])
+
+
+def emit_contest_solutions(attempts: list[Attempt]) -> str:
+    """Every solution written — passed, or upsolved since — easiest first.
+
+    One per problem, so this is not the comparison neetcode/SOLUTIONS.md is: it
+    is the approaches themselves, the way to find how a problem was done
+    without opening each file.
+    """
+    solved = sorted((a for a in attempts if a.solution),
+                    key=lambda a: (RANK.get(a.difficulty, 9), a.id))
+    out = ["# Solutions", "", GENERATED, ""]
+    if not solved:
+        return "\n".join(out + [nav(CONTEST_SOLUTIONS), "", "No solution written yet.", ""])
+    out += [f"**{plural(len(solved), 'solution')}**, easiest first.", "",
+            nav(CONTEST_SOLUTIONS), "",
+            "| # | Problem | Diff | Approach | Time | Space | Where |",
+            "|---|---|---|---|---|---|---|"]
+    for a in solved:
+        time, space = split_complexity(a.complexity)
+        out.append(f"| {a.id} | {a.name} | {a.difficulty} | {', '.join(a.patterns)} "
+                   f"| {f'`{time}`' if time else ''} | {f'`{space}`' if space else ''} "
+                   f"| {a.where} |")
+    return "\n".join(out + [""])
 
 
 def search(query: str) -> int:
@@ -1020,13 +1078,15 @@ def main(failures: list[str] | None = None) -> int:
     for path, text in ((TOC, emit_toc(entries)), (STAR, emit_star(entries)),
                        (SOLUTIONS, emit_solutions(entries)),
                        (OPTIMAL, optimal), (CONTESTS, emit_contests(attempts)),
+                       (CONTEST_STAR, emit_contest_star(attempts)),
+                       (CONTEST_SOLUTIONS, emit_contest_solutions(attempts)),
                        (ISSUES, issues)):
         path.write_text(text + "\n", encoding="utf-8", newline="\n")
     for msg in warnings:
         print(f"warning: {msg}", file=sys.stderr)
     contests = len({a.contest for a in attempts} - {MISC})
-    print(f"wrote neetcode/{{TOC,STAR,SOLUTIONS,OPTIMAL}}.md, contests/CONTESTS.md, "
-          f"ISSUES.md "
+    print(f"wrote neetcode/{{TOC,STAR,SOLUTIONS,OPTIMAL}}.md, "
+          f"contests/{{CONTESTS,STAR,SOLUTIONS}}.md, ISSUES.md "
           f"({plural(len(entries), 'problem')} solved"
           + (f", {n_weak} not optimal" if n_weak else "")
           + (f", {plural(contests, 'contest')}" if contests else "")

@@ -27,7 +27,7 @@ beside it. The tool at the root serves both.
 | **[contests/](contests/README.md)** | LeetCode contests, a directory each, and problems met anywhere else in `misc/` — one solution apiece, for volume |
 
     neetcode/   README.md  TOC.md  STAR.md  SOLUTIONS.md  OPTIMAL.md  01-arrays-hashing/ …
-    contests/   README.md  CONTESTS.md  biweekly-190/ …  misc/
+    contests/   README.md  CONTESTS.md  STAR.md  SOLUTIONS.md  biweekly-190/ …  misc/
 
 The split is the point. The topics are a roadmap: a curated set, each problem
 filed where it teaches something. Contest problems are whatever four LeetCode
@@ -87,7 +87,8 @@ collide. The exception is the generated indexes, which both sides rewrite. They
 are derived, so take yours and rebuild rather than merging:
 
     git checkout --ours neetcode/TOC.md neetcode/STAR.md neetcode/SOLUTIONS.md \
-        neetcode/OPTIMAL.md contests/CONTESTS.md ISSUES.md
+        neetcode/OPTIMAL.md contests/CONTESTS.md contests/STAR.md \
+        contests/SOLUTIONS.md ISSUES.md
     make sync
 
 Develop the tool in the public repo rather than the private one, and the flow

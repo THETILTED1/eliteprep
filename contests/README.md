@@ -5,8 +5,11 @@ One solution apiece: after the roadmap in [neetcode/](../neetcode/README.md),
 the point is volume. The tool that serves both is described in the
 [root README](../README.md).
 
-[CONTESTS.md](CONTESTS.md) is the index: a row per contest, newest first, then
-the standalone problems, what is still to upsolve, and what is starred.
+| | |
+|---|---|
+| **[CONTESTS.md](CONTESTS.md)** | a row per contest, newest first, then the problems in `misc/` and what is still to upsolve |
+| **[STAR.md](STAR.md)** | the starred problems, contest and standalone alike |
+| **[SOLUTIONS.md](SOLUTIONS.md)** | every solution written, its approach and complexity, easiest first |
 
     make contest                          # the latest contests, and which are done
     make contest C=biweekly-190           # a draft per question
@@ -87,7 +90,13 @@ rather than in ISSUES.md. Once there is code, all of it is owed.
 One row per contest, newest first, with a cell per question — `✓` solved in the
 window, `✓ (2)` after two wrong answers, `✗` missed, `↻` missed and upsolved
 since — and how many fell inside the 90 minutes. Below the table: the problems
-in `misc/`, the upsolve list, and the starred problems.
+in `misc/`, and the upsolve list.
+
+STAR.md and SOLUTIONS.md are this tree's own, not the NeetCode ones. With one
+solution to a problem there is nothing to set side by side, so SOLUTIONS.md is
+the approaches themselves: every problem with code in it, its `@patterns` and
+both bounds, easiest first — the way to find how something was done without
+opening each file.
 
 `make search` covers these files too, from the one `@patterns` vocabulary the
 NeetCode files use.

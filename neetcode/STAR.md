@@ -4,7 +4,7 @@
 
 **1 problem** worth coming back to.
 
-[NeetCode](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
+[Index](TOC.md) · Starred · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) | [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
 
 **Opt** · ✓ an optimal solution is here · [·](OPTIMAL.md) not one yet
 

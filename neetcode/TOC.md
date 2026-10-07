@@ -4,7 +4,7 @@
 
 **1 problem** · 2 solutions · Easy 1
 
-NeetCode · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) · [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
+Index · [Starred](STAR.md) · [Solutions](SOLUTIONS.md) · [Optimal](OPTIMAL.md) | [Contests](../contests/CONTESTS.md) · [Issues](../ISSUES.md)
 
 **Opt** · ✓ an optimal solution is here · [·](OPTIMAL.md) not one yet
 
